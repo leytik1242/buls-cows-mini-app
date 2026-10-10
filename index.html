@@ -374,6 +374,8 @@ console.log("Telegram user:", telegramUser);
   }
 
   try {
+    console.log("Telegram data received:", Boolean(telegramInitData));
+console.log("Telegram data length:", telegramInitData.length);
     const response = await fetch(
       `${SUPABASE_URL}/functions/v1/create-room`,
       {
@@ -387,6 +389,7 @@ console.log("Telegram user:", telegramUser);
         })
       }
     );
+    
 
     const result = await response.json();
 

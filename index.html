@@ -1,0 +1,442 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101124">
+  <title>Быки и коровы</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, sans-serif;
+      color: #fff;
+      background:
+        radial-gradient(ellipse at 10% 0%, #39317c 0, transparent 45%),
+        radial-gradient(ellipse at 100% 70%, #263b70 0, transparent 40%),
+        #101124;
+    }
+
+    .app {
+      max-width: 480px;
+      margin: auto;
+      padding: 28px 20px 40px;
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 40px;
+    }
+
+    .logo { font-size: 25px; font-weight: 850; }
+    .pill {
+      padding: 8px 12px;
+      border: 1px solid #ffffff20;
+      border-radius: 20px;
+      color: #c9c5ff;
+      font-size: 12px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 30px;
+      animation: appear .65s ease both;
+    }
+
+    .symbol {
+      font-size: 66px;
+      filter: drop-shadow(0 0 25px #927aff70);
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: clamp(30px, 8vw, 42px);
+      line-height: 1.1;
+      margin: 0 0 12px;
+      letter-spacing: -1.5px;
+    }
+
+    .gradient {
+      background: linear-gradient(90deg, #a99bff, #6be2ff);
+      color: transparent;
+      background-clip: text;
+    }
+
+    .sub { color: #aaaac5; line-height: 1.6; }
+
+    .panel {
+      padding: 20px;
+      background: #ffffff0c;
+      border: 1px solid #ffffff17;
+      border-radius: 24px;
+      backdrop-filter: blur(12px);
+      animation: appear .7s ease both;
+    }
+
+    .section-title { font-size: 17px; font-weight: 750; }
+    .section-sub { font-size: 13px; color: #a5a5c0; margin-top: 5px; }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+      color: white;
+      border: 0;
+      transition: transform .18s, filter .18s;
+    }
+
+    button:active { transform: scale(.97); }
+
+    .primary {
+      width: 100%;
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 16px;
+      font-weight: 800;
+      background: linear-gradient(100deg, #7765ff, #4d9bff);
+      box-shadow: 0 8px 28px #635bff38;
+    }
+
+    .secondary {
+      width: 100%;
+      margin-top: 10px;
+      padding: 14px;
+      border: 1px solid #ffffff1c;
+      border-radius: 15px;
+      background: #ffffff09;
+      text-align: left;
+    }
+
+    .secondary small {
+      display: block;
+      margin-top: 4px;
+      color: #aaaac5;
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; animation: appear .35s ease both; }
+
+    .back {
+      padding: 8px 0 20px;
+      background: transparent;
+      color: #b9b5ff;
+    }
+
+    .digits {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9px;
+      margin: 24px 0;
+    }
+
+    .digit {
+      display: grid;
+      place-items: center;
+      aspect-ratio: 1;
+      border-radius: 14px;
+      font-size: 29px;
+      font-weight: 800;
+      background: #ffffff0d;
+      border: 1px solid #ffffff1d;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      color: white;
+      background: #ffffff0b;
+      border: 1px solid #ffffff28;
+      border-radius: 14px;
+      font-size: 20px;
+      text-align: center;
+      letter-spacing: 8px;
+      outline: none;
+    }
+
+    input:focus { border-color: #8f81ff; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .stat {
+      padding: 16px;
+      border-radius: 15px;
+      background: #ffffff0b;
+      text-align: center;
+    }
+
+    .stat strong { display: block; font-size: 25px; }
+    .stat span { color: #aaaac5; font-size: 12px; }
+
+    .history {
+      display: grid;
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    .move {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: #ffffff09;
+      border-radius: 12px;
+      color: #c9c8e2;
+    }
+
+    .message {
+      margin-top: 14px;
+      color: #a9a5ff;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .footer {
+      padding-top: 25px;
+      text-align: center;
+      font-size: 12px;
+      color: #777791;
+    }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <div class="logo">B&C<span class="gradient">.</span></div>
+      <div class="pill">● NUMBER GAME</div>
+    </header>
+
+    <section id="home" class="screen active">
+      <div class="hero">
+        <div class="symbol">🐂</div>
+        <h1>Быки <span class="gradient">&</span><br>коровы</h1>
+        <p class="sub">Угадай число. Проверь логику.<br>Докажи, что ты лучший.</p>
+      </div>
+
+      <div class="panel">
+        <div class="section-title">Готов испытать себя?</div>
+        <div class="section-sub">
+          Компьютер загадал 4 разные цифры.
+          Попробуй угадать их за меньшее число ходов.
+        </div>
+        <button class="primary" onclick="newGame()">🎮 Играть</button>
+        <button class="secondary" onclick="showStats()">
+          📊 Статистика
+          <small>Твои результаты и рекорды</small>
+        </button>
+        <button class="secondary" onclick="showRules()">
+          💡 Как играть?
+          <small>Правила за 15 секунд</small>
+        </button>
+      </div>
+    </section>
+
+    <section id="game" class="screen">
+      <button class="back" onclick="goHome()">← В меню</button>
+      <div class="panel">
+        <div class="section-title">Угадай секретное число</div>
+        <div class="section-sub">Четыре разные цифры от 0 до 9</div>
+        <div class="digits" id="digits">
+          <div class="digit">?</div><div class="digit">?</div>
+          <div class="digit">?</div><div class="digit">?</div>
+        </div>
+
+        <form id="guessForm">
+          <input id="guess" inputmode="numeric" maxlength="4"
+                 placeholder="0000" autocomplete="off"
+                 aria-label="Четырёхзначное число">
+          <button class="primary" type="submit">Проверить число ↗</button>
+        </form>
+
+        <div id="message" class="message">Жду твою первую попытку!</div>
+
+        <div class="stats">
+          <div class="stat"><strong id="attempts">0</strong><span>ПОПЫТКИ</span></div>
+          <div class="stat"><strong id="best">—</strong><span>ЛУЧШИЙ РЕЗУЛЬТАТ</span></div>
+        </div>
+        <div class="section-title">История попыток</div>
+        <div id="history" class="history">
+          <div class="section-sub">Тут появятся твои ходы</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="statsScreen" class="screen">
+      <button class="back" onclick="goHome()">← В меню</button>
+      <div class="panel">
+        <div class="section-title">📊 Твоя статистика</div>
+        <div class="stats">
+          <div class="stat"><strong id="total">0</strong><span>ИГР СЫГРАНО</span></div>
+          <div class="stat"><strong id="wins">0</strong><span>ПОБЕДЫ</span></div>
+          <div class="stat"><strong id="rate">0%</strong><span>ПОБЕД</span></div>
+          <div class="stat"><strong id="record">—</strong><span>РЕКОРД</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="rules" class="screen">
+      <button class="back" onclick="goHome()">← В меню</button>
+      <div class="panel">
+        <div class="section-title">💡 Правила игры</div>
+        <p class="sub">Компьютер загадывает число из четырёх разных цифр.</p>
+        <p>🐂 <b>Бык</b> — цифра угадана и стоит на правильном месте.</p>
+        <p>🐄 <b>Корова</b> — цифра есть в числе, но стоит не на своём месте.</p>
+        <p class="sub">Например, загаданное число 1234, а твоя попытка 1243: это 2 быка и 2 коровы.</p>
+        <button class="primary" onclick="newGame()">Всё понятно — играть!</button>
+      </div>
+    </section>
+
+    <div class="footer">BULLS & COWS · THINK DIFFERENTLY</div>
+  </main>
+
+  <script>
+    const tg = window.Telegram?.WebApp;
+    tg?.ready();
+    tg?.expand();
+
+    const $ = id => document.getElementById(id);
+    let secret = "";
+    let count = 0;
+    let finished = false;
+    let history = [];
+
+    function readStats() {
+      try {
+        return JSON.parse(localStorage.getItem("bc-stats")) ||
+          { total: 0, wins: 0, record: null };
+      } catch {
+        return { total: 0, wins: 0, record: null };
+      }
+    }
+
+    function saveStats(s) {
+      localStorage.setItem("bc-stats", JSON.stringify(s));
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll(".screen").forEach(s =>
+        s.classList.remove("active")
+      );
+      $(id).classList.add("active");
+    }
+
+    function goHome() {
+      showScreen("home");
+    }
+
+    function newGame() {
+      secret = "";
+      while (secret.length < 4) {
+        const d = String(Math.floor(Math.random() * 9) + 1);
+        if (!secret.includes(d)) secret += d;
+      }
+
+      count = 0;
+      finished = false;
+      history = [];
+      $("attempts").textContent = "0";
+      $("message").textContent = "Жду твою первую попытку!";
+      $("history").innerHTML =
+        '<div class="section-sub">Тут появятся твои ходы</div>';
+      $("guess").value = "";
+      $("guess").disabled = false;
+      $("digits").innerHTML = [1, 2, 3, 4]
+        .map(() => '<div class="digit">?</div>').join("");
+      $("best").textContent = readStats().record ?? "—";
+      showScreen("game");
+      $("guess").focus();
+    }
+
+    $("guessForm").addEventListener("submit", event => {
+      event.preventDefault();
+      if (finished) return;
+
+      const guess = $("guess").value.trim();
+
+      if (!/^[1-9]{4}$/.test(guess) || new Set(guess).size !== 4) {
+        $("message").textContent =
+          "Введи 4 разные цифры от 1 до 9, например 1572.";
+        return;
+      }
+
+      count++;
+      let bulls = 0;
+      let cows = 0;
+
+      for (let i = 0; i < 4; i++) {
+        if (guess[i] === secret[i]) bulls++;
+        else if (secret.includes(guess[i])) cows++;
+      }
+
+      history.unshift({ guess, bulls, cows });
+      $("attempts").textContent = count;
+      $("digits").innerHTML = guess.split("")
+        .map(d => `<div class="digit">${d}</div>`).join("");
+      $("history").innerHTML = history.map((h, i) =>
+        `<div class="move">
+          <span>${history.length - i}. <b>${h.guess}</b></span>
+          <span>🐂 ${h.bulls} &nbsp; 🐄 ${h.cows}</span>
+        </div>`
+      ).join("");
+
+      if (bulls === 4) {
+        finished = true;
+        $("message").textContent = `🏆 Победа! Ты угадал за ${count} попыток!`;
+        $("guess").disabled = true;
+        const s = readStats();
+        s.total++;
+        s.wins++;
+        if (s.record === null || count < s.record) s.record = count;
+        saveStats(s);
+        $("best").textContent = s.record;
+        tg?.HapticFeedback?.notificationOccurred("success");
+        const b = document.createElement("button");
+        b.className = "primary";
+        b.textContent = "🔄 Играть ещё";
+        b.onclick = newGame;
+        $("history").prepend(b);
+      } else {
+        $("message").textContent = `🐂 ${bulls} быка · 🐄 ${cows} коровы`;
+        tg?.HapticFeedback?.selectionChanged();
+      }
+
+      $("guess").value = "";
+    });
+
+    function showStats() {
+      const s = readStats();
+      $("total").textContent = s.total;
+      $("wins").textContent = s.wins;
+      $("rate").textContent = s.total
+        ? Math.round(s.wins / s.total * 100) + "%" : "0%";
+      $("record").textContent = s.record ?? "—";
+      showScreen("statsScreen");
+    }
+
+    function showRules() {
+      showScreen("rules");
+    }
+  </script>
+</body>
+</html>

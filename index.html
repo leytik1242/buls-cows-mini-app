@@ -18,6 +18,8 @@
       --muted: #aab5c5;
       --green: #6ee7a0;
       --blue: #60a5fa;
+      --gold: #fbbf24;
+      --red: #fb7185;
       --border: rgba(255,255,255,.09);
     }
 
@@ -36,11 +38,11 @@
 
     button, input, select { font: inherit; }
     button { cursor: pointer; touch-action: manipulation; }
-    button:disabled, input:disabled { opacity: .6; }
+    button:disabled, input:disabled, select:disabled { opacity: .6; }
 
     .app {
       width: 100%;
-      max-width: 520px;
+      max-width: 540px;
       min-height: 100vh;
       margin: 0 auto;
       padding: 18px 16px 32px;
@@ -50,14 +52,15 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 8px;
       margin-bottom: 16px;
     }
 
     .brand {
+      color: var(--muted);
       font-size: 13px;
       font-weight: 800;
       letter-spacing: 1px;
-      color: var(--muted);
       text-transform: uppercase;
     }
 
@@ -113,7 +116,7 @@
     }
 
     .panel {
-      padding: 18px;
+      padding: 17px;
       margin-bottom: 13px;
       background: rgba(31,41,55,.96);
       border: 1px solid var(--border);
@@ -129,7 +132,7 @@
       align-items: center;
       gap: 8px;
       width: 100%;
-      min-height: 51px;
+      min-height: 49px;
       padding: 12px 14px;
       border: 1px solid transparent;
       border-radius: 14px;
@@ -142,6 +145,7 @@
     .btn:active { transform: scale(.985); }
     .btn-primary { background: var(--green); color: #10251a; }
     .btn-blue { background: var(--blue); color: #10233c; }
+
     .btn-secondary {
       border-color: var(--border);
       background: rgba(255,255,255,.035);
@@ -156,10 +160,9 @@
 
     .utility-btn {
       display: flex;
-      min-height: 68px;
+      min-height: 65px;
       align-items: center;
       justify-content: center;
-      gap: 8px;
       padding: 12px 8px;
       border: 1px solid var(--border);
       border-radius: 15px;
@@ -206,13 +209,29 @@
     .feature p { margin: 3px 0 0; color: var(--muted); font-size: 13px; }
 
     .notice {
-      padding: 11px 12px;
+      padding: 12px;
       margin-top: 12px;
-      border-radius: 12px;
-      background: rgba(96,165,250,.09);
+      border: 1px solid rgba(96,165,250,.13);
+      border-radius: 13px;
+      background: rgba(96,165,250,.08);
       color: #c6ddff;
       font-size: 12px;
       line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .winner-secret-reveal {
+      border-color: rgba(110,231,160,.28);
+      background: rgba(110,231,160,.08);
+      color: #b5f7ce;
+    }
+
+    .revealed-number {
+      display: block;
+      margin-top: 10px;
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: 7px;
     }
 
     .back {
@@ -299,36 +318,220 @@
       text-align: center;
     }
 
-    .history { display: grid; gap: 8px; }
+    .back {
+      cursor: pointer;
+    }
 
-    .move {
+    .online-code {
       display: flex;
+      align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 15px;
+      margin-top: 12px;
+      border: 1px dashed rgba(110,231,160,.35);
+      border-radius: 15px;
+      background: rgba(110,231,160,.045);
+    }
+
+    .online-code-number {
+      color: var(--green);
+      font-size: 31px;
+      font-weight: 900;
+      letter-spacing: 6px;
+    }
+
+    .online-mode-label {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      margin-bottom: 8px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .player-list {
+      display: grid;
       gap: 9px;
+    }
+
+    .player-card {
+      display: flex;
+      align-items: center;
+      gap: 11px;
       padding: 12px;
       border: 1px solid var(--border);
-      border-radius: 12px;
-      background: rgba(255,255,255,.035);
-      font-size: 13px;
-      overflow-wrap: anywhere;
+      border-radius: 14px;
+      background: rgba(255,255,255,.025);
     }
 
-    .section-sub {
-      padding: 10px 0;
+    .player-avatar {
+      display: grid;
+      place-items: center;
+      flex: 0 0 38px;
+      width: 38px;
+      height: 38px;
+      border-radius: 13px;
+      background: #293b52;
+      font-size: 19px;
+    }
+
+    .player-info { min-width: 0; flex: 1; }
+    .player-name { font-weight: 800; font-size: 14px; }
+    .player-caption { margin-top: 4px; color: var(--muted); font-size: 12px; }
+
+    .player-status {
+      padding: 6px 9px;
+      border-radius: 18px;
+      background: rgba(110,231,160,.10);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .player-status.waiting {
+      background: rgba(251,191,36,.10);
+      color: var(--gold);
+    }
+
+    .online-history-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+    }
+
+    .online-history-card {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      background: rgba(15,23,42,.52);
+    }
+
+    .online-history-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 11px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,.025);
+    }
+
+    .history-head-icon {
+      display: grid;
+      place-items: center;
+      flex: 0 0 32px;
+      width: 32px;
+      height: 32px;
+      border-radius: 11px;
+      background: rgba(96,165,250,.12);
+      font-size: 17px;
+    }
+
+    .history-head-icon.opponent {
+      background: rgba(251,191,36,.12);
+    }
+
+    .history-head-text { min-width: 0; flex: 1; }
+    .history-head-title { font-size: 12px; font-weight: 850; }
+    .history-head-subtitle { margin-top: 3px; color: var(--muted); font-size: 10px; }
+
+    .history-count {
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      min-width: 23px;
+      height: 23px;
+      padding: 0 5px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.07);
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .online-history-list {
+      display: grid;
+      align-content: start;
+      gap: 8px;
+      min-height: 88px;
+      max-height: 360px;
+      overflow-y: auto;
+      padding: 10px;
+    }
+
+    .online-move {
+      padding: 10px;
+      border: 1px solid rgba(255,255,255,.065);
+      border-radius: 12px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .online-move-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 7px;
+      margin-bottom: 9px;
+    }
+
+    .online-move-number {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 750;
+    }
+
+    .online-move-guess {
+      color: var(--text);
+      font-size: 19px;
+      font-weight: 900;
+      letter-spacing: 3px;
+    }
+
+    .online-move-score {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 7px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .score-badge.bulls {
+      background: rgba(110,231,160,.11);
+      color: var(--green);
+    }
+
+    .score-badge.cows {
+      background: rgba(96,165,250,.12);
+      color: #9cc8ff;
+    }
+
+    .history-empty {
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 7px;
+      min-height: 88px;
+      padding: 10px 5px;
       color: var(--muted);
       text-align: center;
-      font-size: 13px;
+      font-size: 11px;
+      line-height: 1.4;
     }
 
-    .rule-row {
-      display: flex;
-      gap: 12px;
-      margin: 14px 0;
-      line-height: 1.5;
-      font-size: 14px;
-    }
-
-    .rule-icon { font-size: 22px; }
+    .history-empty-icon { opacity: .75; font-size: 22px; }
 
     .footer {
       margin-top: 22px;
@@ -337,9 +540,11 @@
       font-size: 11px;
     }
 
-    @media (max-width: 360px) {
+    @media (max-width: 380px) {
       .app { padding-right: 12px; padding-left: 12px; }
-      .panel { padding: 15px; }
+      .panel { padding: 14px; }
+      .online-history-grid { grid-template-columns: 1fr; }
+      .online-history-list { max-height: 260px; }
       .hero-icon { font-size: 48px; }
       .utility-btn { font-size: 12px; }
       .btn { padding: 11px 8px; }
@@ -443,7 +648,9 @@
 
       <div class="panel">
         <div class="section-title">История ходов</div>
-        <div class="history" id="history"><div class="section-sub">Здесь появятся твои попытки</div></div>
+        <div class="history" id="history">
+          <div class="section-sub">Здесь появятся твои попытки</div>
+        </div>
       </div>
       <div class="button-stack">
         <button class="btn btn-secondary" type="button" onclick="window.giveUp()">🏳️ Сдаться</button>
@@ -501,6 +708,7 @@
     let onlineMode = null;
     let pollingTimer = null;
     let onlineBusy = false;
+    let lastOnlineState = null;
 
     function readStats() {
       try {
@@ -525,16 +733,17 @@
       $(id)?.classList.add("active");
     }
 
+    function stopPolling() {
+      if (pollingTimer) clearInterval(pollingTimer);
+      pollingTimer = null;
+    }
+
     function goHome() {
       stopPolling();
       onlineRoomCode = null;
       onlineMode = null;
+      lastOnlineState = null;
       showScreen("home");
-    }
-
-    function stopPolling() {
-      if (pollingTimer) clearInterval(pollingTimer);
-      pollingTimer = null;
     }
 
     function validGuess(value) {
@@ -543,9 +752,35 @@
         new Set(value).size === 4;
     }
 
+    function russianError(message) {
+      const translations = {
+        "Room not found": "Комната не найдена. Проверь код.",
+        "Room is full or already started": "Комната заполнена или игра уже началась.",
+        "Waiting for the second player": "Ожидаем второго игрока.",
+        "Your secret has already been set": "Ты уже загадал число.",
+        "Both players must set their secret first": "Сначала оба игрока должны загадать число.",
+        "It is the other player's turn": "Сейчас ход соперника. Подожди.",
+        "The game has finished": "Игра уже завершена.",
+        "You are not a member of this room": "Ты не участник этой комнаты.",
+        "Could not join room; retry": "Не удалось подключиться к комнате. Попробуй ещё раз.",
+        "The race has not started": "Гонка ещё не началась. Ожидаем второго игрока.",
+        "Your secret has already been set": "Ты уже сохранил своё число.",
+        "Secret must contain four different digits from 1 to 9": "Введи четыре разные цифры от 1 до 9.",
+        "Guess must contain four different digits from 1 to 9": "Введи четыре разные цифры от 1 до 9.",
+        "Room state is invalid": "Не удалось прочитать состояние комнаты.",
+        "Could not load room": "Не удалось загрузить комнату.",
+        "Could not save secret": "Не удалось сохранить секретное число.",
+        "Could not save guess": "Не удалось сохранить попытку."
+      };
+
+      return translations[message] || message || "Произошла неизвестная ошибка.";
+    }
+
     async function roomRequest(action, extra = {}) {
       const initData = tg?.initData || "";
-      if (!initData) throw new Error("Открой игру через Telegram-бота.");
+      if (!initData) {
+        throw new Error("Открой игру через Telegram-бота.");
+      }
 
       const response = await fetch(`${SUPABASE_URL}/functions/v1/create-room`, {
         method: "POST",
@@ -563,16 +798,20 @@
         throw new Error(`Сервер вернул некорректный ответ (${response.status}).`);
       }
 
-      if (!response.ok) throw new Error(result?.error || `Ошибка сервера ${response.status}`);
+      if (!response.ok) {
+        throw new Error(russianError(result?.error || `Ошибка сервера ${response.status}`));
+      }
+
       return result;
     }
 
     async function createRoom() {
       if (onlineBusy) return;
-      onlineBusy = true;
 
+      onlineBusy = true;
       const button = document.querySelector('button[onclick="window.createRoom()"]');
       const originalText = button?.textContent;
+
       if (button) {
         button.disabled = true;
         button.textContent = "Создаём комнату…";
@@ -587,14 +826,15 @@
 
         ensureOnlineScreen();
         showScreen("onlineScreen");
+
         await refreshOnlineRoom();
         startPolling();
 
         alert(
           "✅ Комната создана!\n\n" +
-          "Режим: " + (onlineMode === "duel" ? "Дуэль" : "Кто быстрее угадает") +
+          "Режим: " + modeTitle(onlineMode) +
           "\nКод для друга: " + onlineRoomCode +
-          "\n\nПередай код другу."
+          "\n\nПередай этот код другу."
         );
       } catch (error) {
         console.error("create-room error:", error);
@@ -623,8 +863,10 @@
 
       try {
         const result = await roomRequest("join", { roomCode });
+
         onlineRoomCode = String(result.roomCode || roomCode);
         onlineMode = result.gameMode || "race";
+
         ensureOnlineScreen();
         showScreen("onlineScreen");
         renderOnlineRoom(result);
@@ -637,6 +879,10 @@
       }
     }
 
+    function modeTitle(mode) {
+      return mode === "duel" ? "⚔️ Дуэль" : "🏁 Кто быстрее угадает";
+    }
+
     function ensureOnlineScreen() {
       let screen = $("onlineScreen");
       if (screen) return screen;
@@ -644,31 +890,67 @@
       screen = document.createElement("section");
       screen.id = "onlineScreen";
       screen.className = "screen";
+
       screen.innerHTML = `
         <button id="onlineBack" class="back" type="button">← На главную</button>
+
         <div class="panel">
+          <span id="onlineModeBadge" class="online-mode-label">Онлайн-игра</span>
           <h2 id="onlineHeading">Онлайн-игра</h2>
-          <p class="muted">Код комнаты:</p>
-          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-            <div id="onlineCode" style="font-size:32px;font-weight:850;letter-spacing:5px">----</div>
-            <button id="copyOnlineCode" class="btn btn-secondary" style="width:auto" type="button">Копировать код</button>
+          <p class="muted">Код для приглашения друга</p>
+
+          <div class="online-code">
+            <div id="onlineCode" class="online-code-number">----</div>
+            <button id="copyOnlineCode" class="btn btn-secondary" style="width:auto" type="button">
+              📋 Копировать
+            </button>
           </div>
-          <p id="onlineStatus" class="message" aria-live="polite">Подключаемся…</p>
+
+          <p id="onlineStatus" class="message" aria-live="polite">
+            Подключаемся…
+          </p>
+          <div id="onlineResult"></div>
         </div>
+
         <div class="panel">
-          <h3>Игроки</h3>
-          <div id="onlinePlayers" class="history"></div>
+          <div class="section-title">👥 Игроки</div>
+          <div id="onlinePlayers" class="player-list"></div>
         </div>
+
         <div class="panel">
-          <h3>Игровое действие</h3>
+          <div class="section-title">🎮 Твой ход</div>
           <div id="onlineAction"></div>
         </div>
+
         <div class="panel">
-          <h3>История попыток</h3>
-          <div id="onlineHistory" class="history">
-            <div class="section-sub">Пока ходов нет</div>
+          <div class="section-title">📜 История игры</div>
+          <div class="online-history-grid">
+            <div class="online-history-card">
+              <div class="online-history-head">
+                <div class="history-head-icon">🙋</div>
+                <div class="history-head-text">
+                  <div class="history-head-title">Мои ходы</div>
+                  <div class="history-head-subtitle">Твои попытки</div>
+                </div>
+                <div id="myHistoryCount" class="history-count">0</div>
+              </div>
+              <div id="myOnlineHistory" class="online-history-list"></div>
+            </div>
+
+            <div class="online-history-card">
+              <div class="online-history-head">
+                <div class="history-head-icon opponent">🎯</div>
+                <div class="history-head-text">
+                  <div class="history-head-title">Ходы соперника</div>
+                  <div class="history-head-subtitle">Попытки друга</div>
+                </div>
+                <div id="opponentHistoryCount" class="history-count">0</div>
+              </div>
+              <div id="opponentOnlineHistory" class="online-history-list"></div>
+            </div>
           </div>
-        </div>`;
+        </div>
+      `;
 
       const app = document.querySelector(".app");
       const footer = document.querySelector(".footer");
@@ -678,9 +960,10 @@
 
       $("copyOnlineCode").addEventListener("click", async () => {
         if (!onlineRoomCode) return;
+
         try {
           await navigator.clipboard.writeText(onlineRoomCode);
-          alert("Код скопирован: " + onlineRoomCode);
+          alert("Код комнаты скопирован: " + onlineRoomCode);
         } catch (_) {
           prompt("Скопируй код комнаты:", onlineRoomCode);
         }
@@ -689,8 +972,10 @@
       screen.addEventListener("submit", async (event) => {
         const form = event.target;
         if (!(form instanceof HTMLFormElement)) return;
-        event.preventDefault();
 
+        if (form.id !== "secretForm" && form.id !== "onlineGuessForm") return;
+
+        event.preventDefault();
         if (onlineBusy) return;
 
         try {
@@ -698,31 +983,35 @@
           setOnlineInputsDisabled(true);
 
           if (form.id === "secretForm") {
-            const value = form.elements.secret.value.trim();
-            if (!validGuess(value)) {
+            const input = form.elements.namedItem("secret");
+            const chosenSecret = input?.value.trim();
+
+            if (!validGuess(chosenSecret)) {
               throw new Error("Введи четыре разные цифры от 1 до 9.");
             }
 
             const result = await roomRequest("set-secret", {
               roomCode: onlineRoomCode,
-              secret: value
+              secret: chosenSecret
             });
 
-            alert(result.message || "Число сохранено.");
-          } else if (form.id === "onlineGuessForm") {
-            const value = form.elements.guess.value.trim();
-            if (!validGuess(value)) {
+            alert(russianServerMessage(result.message || "Число сохранено."));
+          } else {
+            const input = form.elements.namedItem("guess");
+            const guess = input?.value.trim();
+
+            if (!validGuess(guess)) {
               throw new Error("Введи четыре разные цифры от 1 до 9.");
             }
 
             const result = await roomRequest("guess", {
               roomCode: onlineRoomCode,
-              guess: value
+              guess
             });
 
             if (result.result) {
               alert(
-                `Твоя попытка: ${value}\n` +
+                `Твоя попытка: ${guess}\n` +
                 `🐂 Быков: ${result.result.bulls}\n` +
                 `🐄 Коров: ${result.result.cows}` +
                 (result.won ? "\n🏆 Ты победил!" : "")
@@ -732,7 +1021,7 @@
 
           await refreshOnlineRoom();
         } catch (error) {
-          console.error("Online action error:", error);
+          console.error("Ошибка онлайн-игры:", error);
           alert(error instanceof Error ? error.message : "Не удалось выполнить действие.");
           await refreshOnlineRoom().catch(() => {});
         } finally {
@@ -747,26 +1036,195 @@
     function setOnlineInputsDisabled(disabled) {
       const screen = $("onlineScreen");
       if (!screen) return;
+
       screen.querySelectorAll("#onlineAction button, #onlineAction input")
-        .forEach((element) => { element.disabled = disabled; });
+        .forEach((element) => {
+          element.disabled = disabled;
+        });
+    }
+
+    function russianServerMessage(message) {
+      const translations = {
+        "Both players are ready. The game has started.": "Оба игрока загадали свои числа. Дуэль начинается!",
+        "Secret saved. Waiting for the other player.": "Твоё число сохранено. Ждём, пока соперник загадает своё число.",
+        "Оба игрока загадали свои числа. Дуэль начинается!": "Оба игрока загадали свои числа. Дуэль начинается!",
+        "Твоё число сохранено. Ждём, пока соперник загадает своё число.": "Твоё число сохранено. Ждём, пока соперник загадает своё число."
+      };
+
+      return translations[message] || message;
     }
 
     async function refreshOnlineRoom() {
       if (!onlineRoomCode) return;
-      const result = await roomRequest("state", { roomCode: onlineRoomCode });
+
+      const result = await roomRequest("state", {
+        roomCode: onlineRoomCode
+      });
+
       renderOnlineRoom(result);
     }
 
     function startPolling() {
       stopPolling();
+
       pollingTimer = setInterval(async () => {
         if (!onlineRoomCode || onlineBusy) return;
+
         try {
           await refreshOnlineRoom();
         } catch (error) {
-          console.error("Room refresh error:", error);
+          console.error("Не удалось обновить состояние комнаты:", error);
         }
       }, 2500);
+    }
+
+    function renderPlayerList(gameState, onlineMode) {
+      const you = String(gameState.you || "");
+      const players = gameState.players || [];
+      const container = $("onlinePlayers");
+      container.replaceChildren();
+
+      players.forEach((player, index) => {
+        const isMe = String(player.telegramUserId) === you;
+
+        const card = document.createElement("div");
+        card.className = "player-card";
+
+        const avatar = document.createElement("div");
+        avatar.className = "player-avatar";
+        avatar.textContent = isMe ? "🙋" : "🎯";
+
+        const info = document.createElement("div");
+        info.className = "player-info";
+
+        const name = document.createElement("div");
+        name.className = "player-name";
+        name.textContent = isMe ? "Ты" : "Соперник";
+
+        const caption = document.createElement("div");
+        caption.className = "player-caption";
+
+        if (players.length < 2 && !isMe) {
+          caption.textContent = "Ожидаем подключения";
+        } else if (onlineMode === "duel") {
+          caption.textContent = player.ready ? "Число загадано" : "Число ещё не загадано";
+        } else {
+          caption.textContent = `${player.attempts || 0} попыток`;
+        }
+
+        const status = document.createElement("div");
+        status.className = "player-status" + (!player.ready ? " waiting" : "");
+        status.textContent = player.ready
+          ? "Готов"
+          : (players.length < 2 && isMe ? "Создатель" : "Ждём");
+
+        info.append(name, caption);
+        card.append(avatar, info, status);
+        container.appendChild(card);
+      });
+
+      if (players.length < 2) {
+        const waiting = document.createElement("div");
+        waiting.className = "notice";
+        waiting.textContent = "Отправь код другу. Когда он войдёт, игра обновится автоматически.";
+        container.appendChild(waiting);
+      }
+    }
+
+    function createHistoryMove(move, index) {
+      const row = document.createElement("div");
+      row.className = "online-move";
+
+      const top = document.createElement("div");
+      top.className = "online-move-top";
+
+      const number = document.createElement("span");
+      number.className = "online-move-number";
+      number.textContent = `ПОПЫТКА ${index + 1}`;
+
+      const guess = document.createElement("span");
+      guess.className = "online-move-guess";
+      guess.textContent = move.guess;
+
+      top.append(number, guess);
+
+      const score = document.createElement("div");
+      score.className = "online-move-score";
+
+      const bulls = document.createElement("span");
+      bulls.className = "score-badge bulls";
+      bulls.textContent = `🐂 ${move.bulls} быка`;
+
+      const cows = document.createElement("span");
+      cows.className = "score-badge cows";
+      cows.textContent = `🐄 ${move.cows} коровы`;
+
+      score.append(bulls, cows);
+      row.append(top, score);
+
+      return row;
+    }
+
+    function renderOneHistory(containerId, countId, entries) {
+      const container = $(containerId);
+      const countBadge = $(countId);
+
+      container.replaceChildren();
+      countBadge.textContent = String(entries.length);
+
+      if (entries.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "history-empty";
+
+        const icon = document.createElement("div");
+        icon.className = "history-empty-icon";
+        icon.textContent = "🕒";
+
+        const text = document.createElement("div");
+        text.textContent = "Пока нет попыток";
+
+        empty.append(icon, text);
+        container.appendChild(empty);
+        return;
+      }
+
+      entries.forEach((entry, index) => {
+        container.appendChild(createHistoryMove(entry, index));
+      });
+    }
+
+    function renderOnlineHistory(gameState, you) {
+      let allHistory = Array.isArray(gameState.history)
+        ? gameState.history
+        : [];
+
+      // Совместимость со старыми состояниями комнаты, в которых
+      // история ещё хранится только внутри игроков.
+      if (allHistory.length === 0 && Array.isArray(gameState.players)) {
+        allHistory = [];
+
+        gameState.players.forEach((player) => {
+          (Array.isArray(player.guesses) ? player.guesses : []).forEach((move) => {
+            allHistory.push({
+              telegramUserId: player.telegramUserId,
+              guess: move.guess,
+              bulls: move.bulls,
+              cows: move.cows
+            });
+          });
+        });
+      }
+
+      const myMoves = allHistory.filter(
+        (move) => String(move.telegramUserId) === you
+      );
+
+      const opponentMoves = allHistory.filter(
+        (move) => String(move.telegramUserId) !== you
+      );
+
+      renderOneHistory("myOnlineHistory", "myHistoryCount", myMoves);
+      renderOneHistory("opponentOnlineHistory", "opponentHistoryCount", opponentMoves);
     }
 
     function renderOnlineRoom(room) {
@@ -775,58 +1233,53 @@
       onlineRoomCode = String(room.roomCode || onlineRoomCode);
       onlineMode = room.gameMode || onlineMode;
 
-      $("onlineCode").textContent = onlineRoomCode;
-      $("onlineHeading").textContent =
-        onlineMode === "duel" ? "⚔️ Дуэль" : "🏁 Кто быстрее угадает";
+      $("onlineCode").textContent = onlineRoomCode || "----";
+      $("onlineHeading").textContent = modeTitle(onlineMode);
+      $("onlineModeBadge").textContent = onlineMode === "duel"
+        ? "Два секретных числа"
+        : "Одно общее число";
 
       const gameState = room.gameState;
+
       if (!gameState || !Array.isArray(gameState.players)) {
-        $("onlineStatus").textContent = "Ожидаем данные комнаты…";
+        $("onlineStatus").textContent = "Не удалось получить состояние комнаты.";
         return;
       }
 
       const you = String(gameState.you || "");
       const players = gameState.players;
-      const me = players.find((player) => String(player.telegramUserId) === you);
+      const me = players.find(
+        (player) => String(player.telegramUserId) === you
+      );
 
-      const playersBox = $("onlinePlayers");
-      playersBox.replaceChildren();
-
-      players.forEach((player) => {
-        const row = document.createElement("div");
-        row.className = "move";
-
-        const name = document.createElement("span");
-        name.textContent = String(player.telegramUserId) === you ? "👤 Ты" : "👥 Соперник";
-
-        const readiness = document.createElement("span");
-        readiness.textContent = player.ready ? "Готов" :
-          (players.length < 2 ? "Ожидание" : "Подготовка");
-
-        row.append(name, readiness);
-        playersBox.appendChild(row);
-      });
+      renderPlayerList(gameState, onlineMode);
+      renderOnlineHistory(gameState, you);
 
       const actionBox = $("onlineAction");
+      const resultBox = $("onlineResult");
+
       let view = "";
       let statusMessage = "";
 
       if (gameState.winner) {
         view = "finished";
-        statusMessage = String(gameState.winner) === you
-          ? "🏆 Ты победил!"
-          : "Игра окончена. Победил соперник.";
+
+        const youWon = String(gameState.winner) === you;
+        statusMessage = youWon
+          ? "🏆 Ты победил! Отличная игра!"
+          : "Игра окончена. В этот раз победил соперник.";
+
         stopPolling();
       } else if (players.length < 2) {
         view = "waiting";
-        statusMessage = "Ожидаем второго игрока. Передай ему код комнаты.";
+        statusMessage = "Ждём второго игрока. Отправь ему код комнаты.";
       } else if (onlineMode === "duel" && !gameState.started) {
         if (!me?.ready) {
           view = "secret";
           statusMessage = "Загадай своё число. Соперник его не увидит.";
         } else {
           view = "duel-wait";
-          statusMessage = "Твоё число сохранено. Ждём соперника.";
+          statusMessage = "Твоё число сохранено. Ждём, пока соперник загадает своё.";
         }
       } else if (!gameState.started) {
         view = "waiting-start";
@@ -836,16 +1289,16 @@
         String(gameState.currentTurn) !== you
       ) {
         view = "opponent-turn";
-        statusMessage = "Ход соперника. Подожди немного.";
+        statusMessage = "Сейчас ход соперника. Как только он сделает попытку, появится твой ход.";
       } else {
         view = "guess";
         statusMessage = onlineMode === "duel"
-          ? "Твой ход: угадай число соперника."
-          : "Оба игрока угадывают общее число.";
+          ? "Твой ход! Угадай число соперника."
+          : "Игра началась! Оба игрока угадывают общее число.";
       }
 
-      // Не пересоздаём поле ввода при каждом опросе сервера.
-      // Это сохраняет набираемый текст и фокус.
+      $("onlineStatus").textContent = statusMessage;
+
       if (actionBox.dataset.view !== view) {
         actionBox.dataset.view = view;
 
@@ -856,8 +1309,8 @@
               <input class="guess-input" id="onlineSecret" name="secret"
                 type="text" inputmode="numeric" maxlength="4"
                 placeholder="Например, 1572" autocomplete="off" required>
-              <p class="hint">Четыре разные цифры от 1 до 9.</p>
-              <button class="btn btn-primary" type="submit">Сохранить число</button>
+              <p class="hint">Четыре разные цифры от 1 до 9. Не сообщай их сопернику.</p>
+              <button class="btn btn-primary" type="submit">🔒 Сохранить число</button>
             </form>`;
         } else if (view === "guess") {
           actionBox.innerHTML = `
@@ -867,42 +1320,50 @@
                 type="text" inputmode="numeric" maxlength="4"
                 placeholder="Например, 1572" autocomplete="off" required>
               <p class="hint">Четыре разные цифры от 1 до 9.</p>
-              <button class="btn btn-primary" type="submit">Проверить</button>
+              <button class="btn btn-primary" type="submit">Проверить попытку</button>
             </form>`;
         } else if (view === "finished") {
-          actionBox.innerHTML = `<p class="message">${statusMessage}</p>`;
+          actionBox.innerHTML = `
+            <div class="notice winner-secret-reveal">
+              <strong>${String(gameState.winner) === you ? "🏆 Победа!" : "Игра завершена"}</strong>
+              <p>${String(gameState.winner) === you
+                ? "Ты первым угадал секретное число."
+                : "Соперник первым угадал нужное число."}</p>
+            </div>
+            <button class="btn btn-primary" type="button" id="onlineBackToHome">
+              На главную
+            </button>`;
+          $("onlineBackToHome").addEventListener("click", goHome);
         } else {
           actionBox.innerHTML = `<div class="section-sub">${statusMessage}</div>`;
         }
       }
 
-      $("onlineStatus").textContent = statusMessage;
+      // Число победителя раскрываем только проигравшему, когда сервер сообщил его.
+      resultBox.replaceChildren();
 
-      const historyBox = $("onlineHistory");
-      historyBox.replaceChildren();
-      let numberOfMoves = 0;
+      if (gameState.revealedSecret) {
+        const reveal = document.createElement("div");
+        reveal.className = "notice winner-secret-reveal";
 
-      players.forEach((player) => {
-        const who = String(player.telegramUserId) === you ? "Ты" : "Соперник";
-        (Array.isArray(player.guesses) ? player.guesses : []).forEach((move) => {
-          numberOfMoves++;
+        const title = document.createElement("div");
+        title.textContent = "🎯 Число, которое загадал победитель";
 
-          const row = document.createElement("div");
-          row.className = "move";
+        const number = document.createElement("span");
+        number.className = "revealed-number";
+        number.textContent = String(gameState.revealedSecret);
 
-          const attempt = document.createElement("span");
-          attempt.textContent = `${who}: ${move.guess}`;
+        reveal.append(title, number);
+        resultBox.appendChild(reveal);
+      } else if (gameState.winner && onlineMode === "duel") {
+        const info = document.createElement("div");
+        info.className = "notice";
+        info.textContent = "Дуэль завершена.";
+        resultBox.appendChild(info);
+      }
 
-          const score = document.createElement("span");
-          score.textContent = `🐂 ${move.bulls} · 🐄 ${move.cows}`;
-
-          row.append(attempt, score);
-          historyBox.appendChild(row);
-        });
-      });
-
-      if (!numberOfMoves) {
-        historyBox.innerHTML = '<div class="section-sub">Пока ходов нет</div>';
+      if (gameState.winner) {
+        stopPolling();
       }
     }
 
@@ -918,6 +1379,7 @@
 
     function recordInterruptedGame() {
       if (!gameStarted || gameRecorded || finished || count === 0) return;
+
       const stats = readStats();
       stats.total++;
       saveStats(stats);
@@ -928,10 +1390,12 @@
       stopPolling();
       onlineRoomCode = null;
       onlineMode = null;
+      lastOnlineState = null;
 
       recordInterruptedGame();
 
       secret = "";
+
       while (secret.length < 4) {
         const digit = String(Math.floor(Math.random() * 9) + 1);
         if (!secret.includes(digit)) secret += digit;
@@ -945,11 +1409,15 @@
 
       $("attempts").textContent = "0";
       $("message").textContent = "Жду твою первую попытку!";
-      $("history").innerHTML = '<div class="section-sub">Здесь появятся твои попытки</div>';
+      $("history").innerHTML =
+        '<div class="section-sub">Здесь появятся твои попытки</div>';
+
       $("guess").value = "";
       $("guess").disabled = false;
       $("digits").innerHTML = [1, 2, 3, 4]
-        .map(() => '<div class="digit">?</div>').join("");
+        .map(() => '<div class="digit">?</div>')
+        .join("");
+
       $("best").textContent = readStats().record ?? "—";
 
       showScreen("game");
@@ -973,7 +1441,8 @@
       $("guess").disabled = true;
       $("message").textContent = "Загаданное число: " + secret;
       $("digits").innerHTML = secret.split("")
-        .map((digit) => `<div class="digit">${digit}</div>`).join("");
+        .map((digit) => `<div class="digit">${digit}</div>`)
+        .join("");
 
       updateStatsScreen();
       tg?.HapticFeedback?.notificationOccurred("warning");
@@ -990,16 +1459,19 @@
 
     $("guessForm").addEventListener("submit", (event) => {
       event.preventDefault();
+
       if (finished) return;
 
       const guess = $("guess").value.trim();
 
       if (!validGuess(guess)) {
-        $("message").textContent = "Введи 4 разные цифры от 1 до 9, например 1572.";
+        $("message").textContent =
+          "Введи 4 разные цифры от 1 до 9, например 1572.";
         return;
       }
 
       count++;
+
       let bulls = 0;
       let cows = 0;
 
@@ -1012,27 +1484,34 @@
       $("attempts").textContent = count;
 
       $("digits").innerHTML = guess.split("")
-        .map((digit) => `<div class="digit">${digit}</div>`).join("");
+        .map((digit) => `<div class="digit">${digit}</div>`)
+        .join("");
 
       $("history").innerHTML = history.map((move, i) =>
         `<div class="move">
           <span>${history.length - i}. <b>${move.guess}</b></span>
           <span>🐂 ${move.bulls} &nbsp; 🐄 ${move.cows}</span>
-        </div>`).join("");
+        </div>`
+      ).join("");
 
       if (bulls === 4) {
         finished = true;
         gameRecorded = true;
+
         $("message").textContent = `🏆 Победа! Ты угадал за ${count} попыток!`;
         $("guess").disabled = true;
 
         const stats = readStats();
         stats.total++;
         stats.wins++;
-        if (stats.record === null || count < stats.record) stats.record = count;
-        saveStats(stats);
 
+        if (stats.record === null || count < stats.record) {
+          stats.record = count;
+        }
+
+        saveStats(stats);
         $("best").textContent = stats.record;
+
         tg?.HapticFeedback?.notificationOccurred("success");
 
         const button = document.createElement("button");
@@ -1058,7 +1537,7 @@
     window.goHome = goHome;
     window.showScreen = showScreen;
 
-    console.log("Mini App загружен.", {
+    console.log("Игра загружена.", {
       telegramAvailable: Boolean(tg),
       initDataPresent: Boolean(tg?.initData)
     });

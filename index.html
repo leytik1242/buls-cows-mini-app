@@ -440,5 +440,17 @@
       showScreen("rules");
     }
   </script>
+  
+  <script>
+    const SUPABASE_URL = "https://zszvdojmvillbhwyodzb.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_D5kH72S7FWe0DdhPbMcWrA_guF4w4no";
+
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    console.log("Supabase подключён к игре");
+  </script>
 </body>
 </html>

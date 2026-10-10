@@ -22,9 +22,7 @@
       --border: rgba(255,255,255,.09);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -38,37 +36,27 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    button, input {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-      touch-action: manipulation;
-    }
-
-    button:disabled {
-      opacity: .6;
-      cursor: wait;
-    }
+    button, input { font: inherit; }
+    button { cursor: pointer; touch-action: manipulation; }
+    button:disabled { opacity: .6; cursor: wait; }
 
     .app {
       width: 100%;
       max-width: 520px;
       min-height: 100vh;
       margin: 0 auto;
-      padding: 20px 16px 36px;
+      padding: 18px 16px 32px;
     }
 
     .topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
     }
 
     .brand {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 800;
       letter-spacing: 1px;
       color: var(--muted);
@@ -93,97 +81,79 @@
       background: var(--green);
     }
 
-    .screen {
-      display: none;
-      animation: appear .2s ease-out;
-    }
-
-    .screen.active {
-      display: block;
-    }
-
-    @keyframes appear {
-      from { opacity: 0; transform: translateY(5px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .screen { display: none; }
+    .screen.active { display: block; }
 
     .hero {
-      padding: 25px 12px 28px;
+      padding: 18px 8px 16px;
       text-align: center;
     }
 
     .hero-icon {
-      margin-bottom: 14px;
-      font-size: 64px;
+      margin-bottom: 10px;
+      font-size: 54px;
       line-height: 1.2;
     }
 
     h1 {
-      margin: 0 0 12px;
-      font-size: clamp(28px, 8vw, 38px);
-      line-height: 1.1;
+      margin: 0 0 10px;
+      font-size: clamp(28px, 8vw, 37px);
+      line-height: 1.12;
       letter-spacing: -1px;
     }
 
     h2 {
-      margin: 0 0 18px;
-      font-size: 24px;
+      margin: 0 0 12px;
+      font-size: 23px;
     }
 
     h3 {
-      margin: 0 0 10px;
-      font-size: 16px;
-    }
-
-    p {
-      line-height: 1.55;
-    }
-
-    .muted {
-      color: var(--muted);
-    }
-
-    .hero p {
-      max-width: 340px;
-      margin: 0 auto;
-      color: var(--muted);
+      margin: 0 0 6px;
       font-size: 15px;
     }
 
+    p { line-height: 1.5; }
+    .muted { color: var(--muted); }
+
+    .hero p {
+      max-width: 330px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
     .panel {
-      padding: 20px;
-      margin-bottom: 14px;
-      background: rgba(31,41,55,.94);
+      padding: 18px;
+      margin-bottom: 13px;
+      background: rgba(31,41,55,.96);
       border: 1px solid var(--border);
-      border-radius: 22px;
-      box-shadow: 0 12px 35px rgba(0,0,0,.12);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.12);
     }
 
     .button-stack {
       display: grid;
-      gap: 11px;
+      gap: 10px;
     }
 
     .btn {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 9px;
+      gap: 8px;
       width: 100%;
-      min-height: 54px;
-      padding: 14px 16px;
+      min-height: 51px;
+      padding: 12px 14px;
       border: 1px solid transparent;
-      border-radius: 15px;
+      border-radius: 14px;
       background: var(--panel-light);
       color: var(--text);
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 750;
-      transition: transform .12s, opacity .12s;
+      transition: transform .12s;
     }
 
-    .btn:active {
-      transform: scale(.985);
-    }
+    .btn:active { transform: scale(.985); }
 
     .btn-primary {
       background: var(--green);
@@ -200,41 +170,65 @@
       background: rgba(255,255,255,.035);
     }
 
-    .btn-small {
-      min-height: 42px;
-      padding: 10px 13px;
-      font-size: 14px;
+    /* Статистика и правила перемещены вверх */
+    .utility-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin: 0 0 14px;
     }
 
+    .utility-btn {
+      display: flex;
+      min-height: 68px;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 8px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: rgba(255,255,255,.045);
+      color: var(--text);
+      text-align: center;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .utility-btn:active { transform: scale(.985); }
+
     .section-title {
-      margin: 0 0 14px;
-      font-size: 17px;
+      margin: 0 0 12px;
+      font-size: 16px;
       font-weight: 800;
     }
 
     .feature {
       display: flex;
-      gap: 12px;
-      margin-top: 15px;
+      gap: 11px;
       align-items: flex-start;
+      margin-top: 14px;
     }
 
-    .feature-icon {
-      font-size: 23px;
-    }
+    .feature-icon { font-size: 22px; }
 
     .feature p {
-      margin: 4px 0 0;
+      margin: 3px 0 0;
       color: var(--muted);
       font-size: 13px;
     }
 
-    .screen-heading {
-      margin-bottom: 18px;
+    .notice {
+      padding: 11px 12px;
+      margin-top: 12px;
+      border-radius: 12px;
+      background: rgba(96,165,250,.09);
+      color: #c6ddff;
+      font-size: 12px;
+      line-height: 1.5;
     }
 
     .back {
-      margin-bottom: 17px;
+      margin-bottom: 15px;
       padding: 7px 0;
       border: 0;
       background: transparent;
@@ -242,17 +236,20 @@
       font-size: 14px;
     }
 
+    .screen-heading { margin-bottom: 17px; }
+
     .game-stats {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
-      margin-bottom: 14px;
+      margin-bottom: 13px;
     }
 
     .stat-box {
-      padding: 15px;
+      min-width: 0;
+      padding: 14px;
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 15px;
       background: rgba(255,255,255,.035);
     }
 
@@ -265,13 +262,14 @@
     .stat-value {
       font-size: 25px;
       font-weight: 850;
+      overflow-wrap: anywhere;
     }
 
     .digits {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 9px;
-      margin: 16px 0;
+      gap: 8px;
+      margin: 15px 0;
     }
 
     .digit {
@@ -280,51 +278,45 @@
       aspect-ratio: 1;
       max-height: 80px;
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 15px;
       background: #172235;
-      font-size: 28px;
+      font-size: 27px;
       font-weight: 850;
     }
 
     .message {
       min-height: 28px;
       margin: 12px 0;
-      text-align: center;
       color: var(--green);
+      text-align: center;
       font-size: 14px;
       font-weight: 700;
     }
 
     .guess-form {
       display: flex;
-      gap: 9px;
+      gap: 8px;
     }
 
     .guess-input {
       min-width: 0;
       width: 100%;
-      padding: 14px;
+      padding: 13px 8px;
       border: 1px solid rgba(255,255,255,.14);
-      border-radius: 14px;
+      border-radius: 13px;
       outline: none;
       background: #111827;
       color: var(--text);
       text-align: center;
       font-size: 21px;
-      letter-spacing: 5px;
+      letter-spacing: 4px;
     }
 
-    .guess-input:focus {
-      border-color: var(--green);
-    }
-
-    .guess-form .btn {
-      width: auto;
-      flex-shrink: 0;
-    }
+    .guess-input:focus { border-color: var(--green); }
+    .guess-form .btn { width: auto; flex-shrink: 0; }
 
     .hint {
-      margin: 12px 0 0;
+      margin: 11px 0 0;
       color: var(--muted);
       font-size: 12px;
       text-align: center;
@@ -332,25 +324,25 @@
 
     .history {
       display: grid;
-      gap: 9px;
+      gap: 8px;
     }
 
     .move {
       display: flex;
       justify-content: space-between;
-      gap: 10px;
-      padding: 13px;
+      gap: 9px;
+      padding: 12px;
       border: 1px solid var(--border);
       border-radius: 12px;
       background: rgba(255,255,255,.035);
-      font-size: 14px;
+      font-size: 13px;
     }
 
     .section-sub {
+      padding: 10px 0;
       color: var(--muted);
       text-align: center;
       font-size: 13px;
-      padding: 10px 0;
     }
 
     .rule-row {
@@ -358,46 +350,25 @@
       gap: 12px;
       margin: 14px 0;
       line-height: 1.5;
+      font-size: 14px;
     }
 
-    .rule-icon {
-      font-size: 22px;
-    }
+    .rule-icon { font-size: 22px; }
 
     .footer {
-      margin-top: 26px;
-      text-align: center;
+      margin-top: 22px;
       color: #8190a5;
+      text-align: center;
       font-size: 11px;
     }
 
-    .notice {
-      padding: 12px 14px;
-      margin-top: 12px;
-      border-radius: 12px;
-      background: rgba(96,165,250,.09);
-      color: #c6ddff;
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
     @media (max-width: 360px) {
-      .app {
-        padding-right: 12px;
-        padding-left: 12px;
-      }
-
-      .panel {
-        padding: 16px;
-      }
-
-      .hero-icon {
-        font-size: 54px;
-      }
-
-      .btn {
-        padding: 12px;
-      }
+      .app { padding-right: 12px; padding-left: 12px; }
+      .panel { padding: 15px; }
+      .hero-icon { font-size: 48px; }
+      .utility-btn { font-size: 12px; }
+      .btn { padding: 11px 8px; }
+      .stat-value { font-size: 22px; }
     }
   </style>
 </head>
@@ -412,12 +383,24 @@
       </div>
     </header>
 
-    <!-- ГЛАВНЫЙ ЭКРАН -->
+    <!-- ГЛАВНАЯ -->
     <section class="screen active" id="home">
       <div class="hero">
         <div class="hero-icon">🐂🐄</div>
         <h1>Быки и коровы</h1>
-        <p>Угадай секретное число. Проверяй логику с каждым ходом!</p>
+        <p>Угадай секретное число и проверь свою логику!</p>
+      </div>
+
+      <!-- Эти кнопки теперь находятся вверху -->
+      <div class="utility-grid">
+        <button class="utility-btn" type="button"
+          onclick="window.showStats()">
+          📊 Моя статистика
+        </button>
+        <button class="utility-btn" type="button"
+          onclick="window.showRules()">
+          📖 Правила игры
+        </button>
       </div>
 
       <div class="panel">
@@ -439,8 +422,8 @@
         </div>
 
         <div class="notice">
-          Одиночная игра работает прямо здесь. Создание онлайн-комнаты
-          требует работающего серверного подключения.
+          В одиночную игру можно играть сразу. Онлайн-комнаты требуют
+          исправного серверного подключения.
         </div>
       </div>
 
@@ -459,7 +442,7 @@
           <div class="feature-icon">🐂</div>
           <div>
             <h3>Бык</h3>
-            <p>Цифра правильная и стоит на своём месте.</p>
+            <p>Цифра угадана и находится на правильном месте.</p>
           </div>
         </div>
 
@@ -467,20 +450,9 @@
           <div class="feature-icon">🐄</div>
           <div>
             <h3>Корова</h3>
-            <p>Цифра есть в числе, но находится в другом месте.</p>
+            <p>Цифра есть в числе, но находится на другом месте.</p>
           </div>
         </div>
-      </div>
-
-      <div class="button-stack">
-        <button class="btn btn-secondary" type="button"
-          onclick="window.showStats()">
-          📊 Моя статистика
-        </button>
-        <button class="btn btn-secondary" type="button"
-          onclick="window.showRules()">
-          📖 Правила игры
-        </button>
       </div>
     </section>
 
@@ -501,7 +473,7 @@
           <div class="stat-value" id="attempts">0</div>
         </div>
         <div class="stat-box">
-          <div class="stat-label">Лучший результат</div>
+          <div class="stat-label">Рекорд по ходам</div>
           <div class="stat-value" id="best">—</div>
         </div>
       </div>
@@ -528,7 +500,9 @@
             aria-label="Твоя попытка"
             required
           >
-          <button class="btn btn-primary" type="submit">Проверить</button>
+          <button class="btn btn-primary" type="submit">
+            Проверить
+          </button>
         </form>
 
         <p class="hint">Четыре разные цифры от 1 до 9</p>
@@ -541,10 +515,16 @@
         </div>
       </div>
 
-      <button class="btn btn-secondary" type="button"
-        onclick="window.newGame()">
-        🔄 Новая игра
-      </button>
+      <div class="button-stack">
+        <button class="btn btn-secondary" type="button"
+          onclick="window.giveUp()">
+          🏳️ Сдаться
+        </button>
+        <button class="btn btn-secondary" type="button"
+          onclick="window.newGame()">
+          🔄 Новая игра
+        </button>
+      </div>
     </section>
 
     <!-- СТАТИСТИКА -->
@@ -553,14 +533,12 @@
         ← На главную
       </button>
 
-      <div class="screen-heading">
-        <h2>📊 Статистика</h2>
-        <p class="muted">Твои результаты на этом устройстве.</p>
-      </div>
+      <h2>📊 Моя статистика</h2>
+      <p class="muted">Твои результаты на этом устройстве.</p>
 
       <div class="game-stats">
         <div class="stat-box">
-          <div class="stat-label">Всего игр</div>
+          <div class="stat-label">Всего завершено игр</div>
           <div class="stat-value" id="total">0</div>
         </div>
         <div class="stat-box">
@@ -572,7 +550,7 @@
           <div class="stat-value" id="rate">0%</div>
         </div>
         <div class="stat-box">
-          <div class="stat-label">Рекорд по ходам</div>
+          <div class="stat-label">Лучший результат</div>
           <div class="stat-value" id="record">—</div>
         </div>
       </div>
@@ -599,7 +577,7 @@
 
         <div class="rule-row">
           <div class="rule-icon">2️⃣</div>
-          <div>Ты вводишь свой вариант из четырёх неповторяющихся цифр.</div>
+          <div>Вводи число из четырёх цифр без повторений.</div>
         </div>
 
         <div class="rule-row">
@@ -614,7 +592,7 @@
 
         <div class="rule-row">
           <div class="rule-icon">🏆</div>
-          <div>Победа — четыре быка. Постарайся угадать число за меньшее количество ходов!</div>
+          <div>Четыре быка означают победу. Постарайся угадать число за меньшее количество ходов.</div>
         </div>
       </div>
 
@@ -648,10 +626,13 @@
     let finished = false;
     let history = [];
     let creatingRoom = false;
+    let gameRecorded = true;
+    let gameStarted = false;
 
     function readStats() {
       try {
         const value = JSON.parse(localStorage.getItem("bc-stats"));
+
         if (value && typeof value === "object") {
           return {
             total: Number(value.total) || 0,
@@ -685,6 +666,26 @@
       showScreen("home");
     }
 
+    function updateStatsScreen() {
+      const stats = readStats();
+
+      $("total").textContent = stats.total;
+      $("wins").textContent = stats.wins;
+      $("rate").textContent = stats.total
+        ? Math.round((stats.wins / stats.total) * 100) + "%"
+        : "0%";
+      $("record").textContent = stats.record ?? "—";
+    }
+
+    function recordLoss() {
+      if (!gameStarted || gameRecorded || finished || count === 0) return;
+
+      const stats = readStats();
+      stats.total++;
+      saveStats(stats);
+      gameRecorded = true;
+    }
+
     async function createRoom() {
       if (creatingRoom) return;
 
@@ -696,9 +697,11 @@
       }
 
       creatingRoom = true;
+
       const button = document.querySelector(
         'button[onclick="window.createRoom()"]'
       );
+
       const originalText = button?.textContent;
 
       if (button) {
@@ -720,10 +723,13 @@
         );
 
         let result;
+
         try {
           result = await response.json();
         } catch (_) {
-          throw new Error(`Некорректный ответ сервера: ${response.status}`);
+          throw new Error(
+            `Некорректный ответ сервера: ${response.status}`
+          );
         }
 
         if (!response.ok) {
@@ -731,7 +737,10 @@
             status: response.status,
             error: result?.error || "Unknown error"
           });
-          throw new Error(result?.error || `Ошибка сервера: ${response.status}`);
+
+          throw new Error(
+            result?.error || `Ошибка сервера: ${response.status}`
+          );
         }
 
         if (!result?.roomCode) {
@@ -741,11 +750,15 @@
         alert("Комната создана!\nКод для друга: " + result.roomCode);
       } catch (error) {
         console.error("Ошибка создания комнаты:", error);
-        alert(error instanceof Error
-          ? error.message
-          : "Не удалось создать комнату.");
+
+        alert(
+          error instanceof Error
+            ? error.message
+            : "Не удалось создать комнату."
+        );
       } finally {
         creatingRoom = false;
+
         if (button) {
           button.disabled = false;
           button.textContent = originalText || "👥 Создать комнату";
@@ -754,10 +767,16 @@
     }
 
     function showJoinRoom() {
-      alert("Вход в онлайн-комнату пока не подключён. Сейчас доступна одиночная игра.");
+      alert(
+        "Вход в онлайн-комнату пока не подключён. " +
+        "Сейчас доступна одиночная игра."
+      );
     }
 
     function newGame() {
+      // Если предыдущая начатая игра прервана, считаем её поражением.
+      recordLoss();
+
       secret = "";
 
       while (secret.length < 4) {
@@ -768,6 +787,8 @@
       count = 0;
       finished = false;
       history = [];
+      gameStarted = true;
+      gameRecorded = false;
 
       $("attempts").textContent = "0";
       $("message").textContent = "Жду твою первую попытку!";
@@ -787,16 +808,34 @@
       $("guess").focus();
     }
 
+    function giveUp() {
+      if (!gameStarted || finished) {
+        goHome();
+        return;
+      }
+
+      if (count > 0 && !gameRecorded) {
+        const stats = readStats();
+        stats.total++;
+        saveStats(stats);
+        gameRecorded = true;
+      } else {
+        gameRecorded = true;
+      }
+
+      finished = true;
+      $("guess").disabled = true;
+      $("message").textContent = "Загаданное число: " + secret;
+      $("digits").innerHTML = secret.split("")
+        .map((digit) => `<div class="digit">${digit}</div>`)
+        .join("");
+
+      updateStatsScreen();
+      tg?.HapticFeedback?.notificationOccurred("warning");
+    }
+
     function showStats() {
-      const stats = readStats();
-
-      $("total").textContent = stats.total;
-      $("wins").textContent = stats.wins;
-      $("rate").textContent = stats.total
-        ? Math.round(stats.wins / stats.total * 100) + "%"
-        : "0%";
-      $("record").textContent = stats.record ?? "—";
-
+      updateStatsScreen();
       showScreen("statsScreen");
     }
 
@@ -806,6 +845,7 @@
 
     $("guessForm").addEventListener("submit", (event) => {
       event.preventDefault();
+
       if (finished) return;
 
       const guess = $("guess").value.trim();
@@ -822,13 +862,17 @@
       let cows = 0;
 
       for (let i = 0; i < 4; i++) {
-        if (guess[i] === secret[i]) bulls++;
-        else if (secret.includes(guess[i])) cows++;
+        if (guess[i] === secret[i]) {
+          bulls++;
+        } else if (secret.includes(guess[i])) {
+          cows++;
+        }
       }
 
       history.unshift({ guess, bulls, cows });
 
       $("attempts").textContent = count;
+
       $("digits").innerHTML = guess.split("")
         .map((digit) => `<div class="digit">${digit}</div>`)
         .join("");
@@ -842,8 +886,11 @@
 
       if (bulls === 4) {
         finished = true;
+        gameRecorded = true;
+
         $("message").textContent =
           `🏆 Победа! Ты угадал за ${count} попыток!`;
+
         $("guess").disabled = true;
 
         const stats = readStats();
@@ -868,6 +915,7 @@
       } else {
         $("message").textContent =
           `🐂 ${bulls} быка · 🐄 ${cows} коровы`;
+
         tg?.HapticFeedback?.selectionChanged();
       }
 
@@ -877,12 +925,15 @@
     window.createRoom = createRoom;
     window.showJoinRoom = showJoinRoom;
     window.newGame = newGame;
+    window.giveUp = giveUp;
     window.showStats = showStats;
     window.showRules = showRules;
     window.goHome = goHome;
     window.showScreen = showScreen;
 
-    console.log("Игра загружена.");
+    console.log("Игра загружена.", {
+      telegramAvailable: Boolean(tg)
+    });
   })();
   </script>
 </body>

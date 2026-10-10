@@ -1,223 +1,816 @@
 
-<script>
-(() => {
-  const tg = window.Telegram?.WebApp;
-  tg?.ready();
-  tg?.expand();
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#111827">
+  <title>Быки и коровы</title>
 
-  const SUPABASE_URL =
-    "https://zszvdojmvillbhwyodzb.supabase.co";
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  const SUPABASE_PUBLISHABLE_KEY =
-    "sb_publishable_D5kH72S7FWe0DdhPbMcWrA_guF4w4no";
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #111827;
+      --panel: #1f2937;
+      --panel-light: #293548;
+      --text: #f9fafb;
+      --muted: #aab5c5;
+      --green: #6ee7a0;
+      --blue: #60a5fa;
+      --border: rgba(255,255,255,.09);
+    }
 
-  const $ = (id) => document.getElementById(id);
+    * {
+      box-sizing: border-box;
+    }
 
-  function getTelegramInitData() {
-    return window.Telegram?.WebApp?.initData ?? "";
-  }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at top, #243756 0%, transparent 55%),
+        var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-  let secret = "";
-  let count = 0;
-  let finished = false;
-  let history = [];
-  let creatingRoom = false;
+    button, input {
+      font: inherit;
+    }
 
-  function readStats() {
-    try {
-      return JSON.parse(localStorage.getItem("bc-stats")) ||
-        { total: 0, wins: 0, record: null };
-    } catch {
+    button {
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 520px;
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 20px 16px 36px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .brand {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .screen {
+      display: none;
+      animation: appear .2s ease-out;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero {
+      padding: 25px 12px 28px;
+      text-align: center;
+    }
+
+    .hero-icon {
+      margin-bottom: 14px;
+      font-size: 64px;
+      line-height: 1.2;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(28px, 8vw, 38px);
+      line-height: 1.1;
+      letter-spacing: -1px;
+    }
+
+    h2 {
+      margin: 0 0 18px;
+      font-size: 24px;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    p {
+      line-height: 1.55;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .hero p {
+      max-width: 340px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .panel {
+      padding: 20px;
+      margin-bottom: 14px;
+      background: rgba(31,41,55,.94);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: 0 12px 35px rgba(0,0,0,.12);
+    }
+
+    .button-stack {
+      display: grid;
+      gap: 11px;
+    }
+
+    .btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 9px;
+      width: 100%;
+      min-height: 54px;
+      padding: 14px 16px;
+      border: 1px solid transparent;
+      border-radius: 15px;
+      background: var(--panel-light);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 750;
+      transition: transform .12s, opacity .12s;
+    }
+
+    .btn:active {
+      transform: scale(.985);
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: #10251a;
+    }
+
+    .btn-blue {
+      background: var(--blue);
+      color: #10233c;
+    }
+
+    .btn-secondary {
+      border-color: var(--border);
+      background: rgba(255,255,255,.035);
+    }
+
+    .btn-small {
+      min-height: 42px;
+      padding: 10px 13px;
+      font-size: 14px;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .feature {
+      display: flex;
+      gap: 12px;
+      margin-top: 15px;
+      align-items: flex-start;
+    }
+
+    .feature-icon {
+      font-size: 23px;
+    }
+
+    .feature p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .screen-heading {
+      margin-bottom: 18px;
+    }
+
+    .back {
+      margin-bottom: 17px;
+      padding: 7px 0;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .game-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .stat-box {
+      padding: 15px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255,255,255,.035);
+    }
+
+    .stat-label {
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .stat-value {
+      font-size: 25px;
+      font-weight: 850;
+    }
+
+    .digits {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9px;
+      margin: 16px 0;
+    }
+
+    .digit {
+      display: grid;
+      place-items: center;
+      aspect-ratio: 1;
+      max-height: 80px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #172235;
+      font-size: 28px;
+      font-weight: 850;
+    }
+
+    .message {
+      min-height: 28px;
+      margin: 12px 0;
+      text-align: center;
+      color: var(--green);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .guess-form {
+      display: flex;
+      gap: 9px;
+    }
+
+    .guess-input {
+      min-width: 0;
+      width: 100%;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 14px;
+      outline: none;
+      background: #111827;
+      color: var(--text);
+      text-align: center;
+      font-size: 21px;
+      letter-spacing: 5px;
+    }
+
+    .guess-input:focus {
+      border-color: var(--green);
+    }
+
+    .guess-form .btn {
+      width: auto;
+      flex-shrink: 0;
+    }
+
+    .hint {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .history {
+      display: grid;
+      gap: 9px;
+    }
+
+    .move {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255,255,255,.035);
+      font-size: 14px;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+      padding: 10px 0;
+    }
+
+    .rule-row {
+      display: flex;
+      gap: 12px;
+      margin: 14px 0;
+      line-height: 1.5;
+    }
+
+    .rule-icon {
+      font-size: 22px;
+    }
+
+    .footer {
+      margin-top: 26px;
+      text-align: center;
+      color: #8190a5;
+      font-size: 11px;
+    }
+
+    .notice {
+      padding: 12px 14px;
+      margin-top: 12px;
+      border-radius: 12px;
+      background: rgba(96,165,250,.09);
+      color: #c6ddff;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 360px) {
+      .app {
+        padding-right: 12px;
+        padding-left: 12px;
+      }
+
+      .panel {
+        padding: 16px;
+      }
+
+      .hero-icon {
+        font-size: 54px;
+      }
+
+      .btn {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">Мини-игра</div>
+      <div class="status">
+        <span class="status-dot"></span>
+        <span>Готов к игре</span>
+      </div>
+    </header>
+
+    <!-- ГЛАВНЫЙ ЭКРАН -->
+    <section class="screen active" id="home">
+      <div class="hero">
+        <div class="hero-icon">🐂🐄</div>
+        <h1>Быки и коровы</h1>
+        <p>Угадай секретное число. Проверяй логику с каждым ходом!</p>
+      </div>
+
+      <div class="panel">
+        <div class="button-stack">
+          <button class="btn btn-primary" type="button"
+            onclick="window.newGame()">
+            🎮 Играть
+          </button>
+
+          <button class="btn btn-blue" type="button"
+            onclick="window.createRoom()">
+            👥 Создать комнату
+          </button>
+
+          <button class="btn btn-secondary" type="button"
+            onclick="window.showJoinRoom()">
+            🔑 Войти в комнату
+          </button>
+        </div>
+
+        <div class="notice">
+          Одиночная игра работает прямо здесь. Создание онлайн-комнаты
+          требует работающего серверного подключения.
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="section-title">Как играть</div>
+
+        <div class="feature">
+          <div class="feature-icon">🔢</div>
+          <div>
+            <h3>Угадай 4 цифры</h3>
+            <p>Все цифры разные, от 1 до 9.</p>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🐂</div>
+          <div>
+            <h3>Бык</h3>
+            <p>Цифра правильная и стоит на своём месте.</p>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🐄</div>
+          <div>
+            <h3>Корова</h3>
+            <p>Цифра есть в числе, но находится в другом месте.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="button-stack">
+        <button class="btn btn-secondary" type="button"
+          onclick="window.showStats()">
+          📊 Моя статистика
+        </button>
+        <button class="btn btn-secondary" type="button"
+          onclick="window.showRules()">
+          📖 Правила игры
+        </button>
+      </div>
+    </section>
+
+    <!-- ИГРА -->
+    <section class="screen" id="game">
+      <button class="back" type="button" onclick="window.goHome()">
+        ← На главную
+      </button>
+
+      <div class="screen-heading">
+        <h2>Угадай число</h2>
+        <p class="muted">Введи четыре разные цифры.</p>
+      </div>
+
+      <div class="game-stats">
+        <div class="stat-box">
+          <div class="stat-label">Попыток</div>
+          <div class="stat-value" id="attempts">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Лучший результат</div>
+          <div class="stat-value" id="best">—</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="digits" id="digits">
+          <div class="digit">?</div>
+          <div class="digit">?</div>
+          <div class="digit">?</div>
+          <div class="digit">?</div>
+        </div>
+
+        <div class="message" id="message">Жду твою первую попытку!</div>
+
+        <form class="guess-form" id="guessForm">
+          <input
+            class="guess-input"
+            id="guess"
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            maxlength="4"
+            placeholder="1234"
+            aria-label="Твоя попытка"
+            required
+          >
+          <button class="btn btn-primary" type="submit">Проверить</button>
+        </form>
+
+        <p class="hint">Четыре разные цифры от 1 до 9</p>
+      </div>
+
+      <div class="panel">
+        <div class="section-title">История ходов</div>
+        <div class="history" id="history">
+          <div class="section-sub">Здесь появятся твои попытки</div>
+        </div>
+      </div>
+
+      <button class="btn btn-secondary" type="button"
+        onclick="window.newGame()">
+        🔄 Новая игра
+      </button>
+    </section>
+
+    <!-- СТАТИСТИКА -->
+    <section class="screen" id="statsScreen">
+      <button class="back" type="button" onclick="window.goHome()">
+        ← На главную
+      </button>
+
+      <div class="screen-heading">
+        <h2>📊 Статистика</h2>
+        <p class="muted">Твои результаты на этом устройстве.</p>
+      </div>
+
+      <div class="game-stats">
+        <div class="stat-box">
+          <div class="stat-label">Всего игр</div>
+          <div class="stat-value" id="total">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Побед</div>
+          <div class="stat-value" id="wins">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Процент побед</div>
+          <div class="stat-value" id="rate">0%</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Рекорд по ходам</div>
+          <div class="stat-value" id="record">—</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" type="button"
+        onclick="window.newGame()">
+        🎮 Начать игру
+      </button>
+    </section>
+
+    <!-- ПРАВИЛА -->
+    <section class="screen" id="rules">
+      <button class="back" type="button" onclick="window.goHome()">
+        ← На главную
+      </button>
+
+      <h2>📖 Правила игры</h2>
+
+      <div class="panel">
+        <div class="rule-row">
+          <div class="rule-icon">1️⃣</div>
+          <div>Компьютер загадывает число из четырёх разных цифр от 1 до 9.</div>
+        </div>
+
+        <div class="rule-row">
+          <div class="rule-icon">2️⃣</div>
+          <div>Ты вводишь свой вариант из четырёх неповторяющихся цифр.</div>
+        </div>
+
+        <div class="rule-row">
+          <div class="rule-icon">🐂</div>
+          <div><b>Бык</b> — цифра совпала и по значению, и по позиции.</div>
+        </div>
+
+        <div class="rule-row">
+          <div class="rule-icon">🐄</div>
+          <div><b>Корова</b> — цифра есть в загаданном числе, но стоит не там.</div>
+        </div>
+
+        <div class="rule-row">
+          <div class="rule-icon">🏆</div>
+          <div>Победа — четыре быка. Постарайся угадать число за меньшее количество ходов!</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" type="button"
+        onclick="window.newGame()">
+        Понятно, играть!
+      </button>
+    </section>
+
+    <footer class="footer">
+      Быки и коровы · Тренируй логику 🧠
+    </footer>
+  </main>
+
+  <script>
+  (() => {
+    const tg = window.Telegram?.WebApp;
+    tg?.ready();
+    tg?.expand();
+
+    const SUPABASE_URL =
+      "https://zszvdojmvillbhwyodzb.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_D5kH72S7FWe0DdhPbMcWrA_guF4w4no";
+
+    const $ = (id) => document.getElementById(id);
+
+    let secret = "";
+    let count = 0;
+    let finished = false;
+    let history = [];
+    let creatingRoom = false;
+
+    function readStats() {
+      try {
+        const value = JSON.parse(localStorage.getItem("bc-stats"));
+        if (value && typeof value === "object") {
+          return {
+            total: Number(value.total) || 0,
+            wins: Number(value.wins) || 0,
+            record: Number.isFinite(value.record) ? value.record : null
+          };
+        }
+      } catch (_) {}
+
       return { total: 0, wins: 0, record: null };
     }
-  }
 
-  function saveStats(stats) {
-    try {
-      localStorage.setItem("bc-stats", JSON.stringify(stats));
-    } catch (error) {
-      console.warn("Не удалось сохранить статистику.");
-    }
-  }
-
-  function showScreen(id) {
-    document.querySelectorAll(".screen").forEach((screen) => {
-      screen.classList.remove("active");
-    });
-
-    const target = $(id);
-    if (target) target.classList.add("active");
-  }
-
-  function goHome() {
-    showScreen("home");
-  }
-
-  async function createRoom() {
-    if (creatingRoom) return;
-
-    const initData = getTelegramInitData();
-
-    if (!initData) {
-      alert(
-        "Не удалось получить данные Telegram. " +
-        "Открой игру через бота и попробуй ещё раз."
-      );
-      return;
-    }
-
-    creatingRoom = true;
-
-    const button = document.querySelector(
-      'button[onclick="window.createRoom()"]'
-    );
-
-    if (button) {
-      button.disabled = true;
-      button.dataset.originalText ||= button.textContent;
-      button.textContent = "Создаём комнату…";
-    }
-
-    try {
-      const response = await fetch(
-        `${SUPABASE_URL}/functions/v1/create-room`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": SUPABASE_PUBLISHABLE_KEY
-          },
-          body: JSON.stringify({ initData })
-        }
-      );
-
-      let result;
-
+    function saveStats(stats) {
       try {
-        result = await response.json();
-      } catch {
-        throw new Error(
-          `Сервер вернул некорректный ответ (${response.status}).`
-        );
+        localStorage.setItem("bc-stats", JSON.stringify(stats));
+      } catch (_) {
+        console.warn("Не удалось сохранить статистику.");
+      }
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll(".screen").forEach((screen) => {
+        screen.classList.remove("active");
+      });
+
+      const target = $(id);
+      if (target) target.classList.add("active");
+    }
+
+    function goHome() {
+      showScreen("home");
+    }
+
+    async function createRoom() {
+      if (creatingRoom) return;
+
+      const initData = tg?.initData || "";
+
+      if (!initData) {
+        alert("Открой игру через Telegram и попробуй ещё раз.");
+        return;
       }
 
-      if (!response.ok) {
-        console.error("create-room error:", {
-          status: response.status,
-          error: result?.error || "Unknown error"
-        });
-
-        if (response.status === 401) {
-          throw new Error(
-            "Telegram не подтвердил подпись запроса. " +
-            "Нужно исправить проверку на сервере."
-          );
-        }
-
-        throw new Error(
-          result?.error || `Ошибка сервера: ${response.status}`
-        );
-      }
-
-      if (!result?.roomCode) {
-        throw new Error(
-          "Сервер ответил, но не вернул код комнаты."
-        );
-      }
-
-      alert("Комната создана!\nКод для друга: " + result.roomCode);
-
-      console.log("Комната создана успешно.");
-    } catch (error) {
-      console.error(
-        "Ошибка создания комнаты:",
-        error instanceof Error ? error.message : "Неизвестная ошибка"
+      creatingRoom = true;
+      const button = document.querySelector(
+        'button[onclick="window.createRoom()"]'
       );
-
-      alert(
-        error instanceof Error
-          ? error.message
-          : "Не удалось подключиться к серверу."
-      );
-    } finally {
-      creatingRoom = false;
+      const originalText = button?.textContent;
 
       if (button) {
-        button.disabled = false;
-        button.textContent =
-          button.dataset.originalText || "Создать комнату";
+        button.disabled = true;
+        button.textContent = "Создаём комнату…";
+      }
+
+      try {
+        const response = await fetch(
+          `${SUPABASE_URL}/functions/v1/create-room`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "apikey": SUPABASE_PUBLISHABLE_KEY
+            },
+            body: JSON.stringify({ initData })
+          }
+        );
+
+        let result;
+        try {
+          result = await response.json();
+        } catch (_) {
+          throw new Error(`Некорректный ответ сервера: ${response.status}`);
+        }
+
+        if (!response.ok) {
+          console.error("create-room error:", {
+            status: response.status,
+            error: result?.error || "Unknown error"
+          });
+          throw new Error(result?.error || `Ошибка сервера: ${response.status}`);
+        }
+
+        if (!result?.roomCode) {
+          throw new Error("Сервер не вернул код комнаты.");
+        }
+
+        alert("Комната создана!\nКод для друга: " + result.roomCode);
+      } catch (error) {
+        console.error("Ошибка создания комнаты:", error);
+        alert(error instanceof Error
+          ? error.message
+          : "Не удалось создать комнату.");
+      } finally {
+        creatingRoom = false;
+        if (button) {
+          button.disabled = false;
+          button.textContent = originalText || "👥 Создать комнату";
+        }
       }
     }
-  }
 
-  function showJoinRoom() {
-    alert("Вход в комнату пока не подключён к серверу.");
-  }
-
-  function newGame() {
-    secret = "";
-
-    while (secret.length < 4) {
-      const digit = String(Math.floor(Math.random() * 9) + 1);
-
-      if (!secret.includes(digit)) {
-        secret += digit;
-      }
+    function showJoinRoom() {
+      alert("Вход в онлайн-комнату пока не подключён. Сейчас доступна одиночная игра.");
     }
 
-    count = 0;
-    finished = false;
-    history = [];
+    function newGame() {
+      secret = "";
 
-    $("attempts").textContent = "0";
-    $("message").textContent = "Жду твою первую попытку!";
-    $("history").innerHTML =
-      '<div class="section-sub">Тут появятся твои ходы</div>';
+      while (secret.length < 4) {
+        const digit = String(Math.floor(Math.random() * 9) + 1);
+        if (!secret.includes(digit)) secret += digit;
+      }
 
-    $("guess").value = "";
-    $("guess").disabled = false;
+      count = 0;
+      finished = false;
+      history = [];
 
-    $("digits").innerHTML = [1, 2, 3, 4]
-      .map(() => '<div class="digit">?</div>')
-      .join("");
+      $("attempts").textContent = "0";
+      $("message").textContent = "Жду твою первую попытку!";
+      $("history").innerHTML =
+        '<div class="section-sub">Здесь появятся твои попытки</div>';
 
-    $("best").textContent = readStats().record ?? "—";
+      $("guess").value = "";
+      $("guess").disabled = false;
 
-    showScreen("game");
-    $("guess").focus();
-  }
+      $("digits").innerHTML = [1, 2, 3, 4]
+        .map(() => '<div class="digit">?</div>')
+        .join("");
 
-  function showStats() {
-    const stats = readStats();
+      $("best").textContent = readStats().record ?? "—";
 
-    $("total").textContent = stats.total;
-    $("wins").textContent = stats.wins;
+      showScreen("game");
+      $("guess").focus();
+    }
 
-    $("rate").textContent = stats.total
-      ? Math.round((stats.wins / stats.total) * 100) + "%"
-      : "0%";
+    function showStats() {
+      const stats = readStats();
 
-    $("record").textContent = stats.record ?? "—";
+      $("total").textContent = stats.total;
+      $("wins").textContent = stats.wins;
+      $("rate").textContent = stats.total
+        ? Math.round(stats.wins / stats.total * 100) + "%"
+        : "0%";
+      $("record").textContent = stats.record ?? "—";
 
-    showScreen("statsScreen");
-  }
+      showScreen("statsScreen");
+    }
 
-  function showRules() {
-    showScreen("rules");
-  }
+    function showRules() {
+      showScreen("rules");
+    }
 
-  const guessForm = $("guessForm");
-
-  if (guessForm) {
-    guessForm.addEventListener("submit", (event) => {
+    $("guessForm").addEventListener("submit", (event) => {
       event.preventDefault();
-
       if (finished) return;
 
       const guess = $("guess").value.trim();
 
-      if (!/^[1-9]{4}$/.test(guess) ||
-          new Set(guess).size !== 4) {
+      if (!/^[1-9]{4}$/.test(guess) || new Set(guess).size !== 4) {
         $("message").textContent =
           "Введи 4 разные цифры от 1 до 9, например 1572.";
         return;
@@ -229,17 +822,13 @@
       let cows = 0;
 
       for (let i = 0; i < 4; i++) {
-        if (guess[i] === secret[i]) {
-          bulls++;
-        } else if (secret.includes(guess[i])) {
-          cows++;
-        }
+        if (guess[i] === secret[i]) bulls++;
+        else if (secret.includes(guess[i])) cows++;
       }
 
       history.unshift({ guess, bulls, cows });
 
       $("attempts").textContent = count;
-
       $("digits").innerHTML = guess.split("")
         .map((digit) => `<div class="digit">${digit}</div>`)
         .join("");
@@ -253,10 +842,8 @@
 
       if (bulls === 4) {
         finished = true;
-
         $("message").textContent =
           `🏆 Победа! Ты угадал за ${count} попыток!`;
-
         $("guess").disabled = true;
 
         const stats = readStats();
@@ -273,33 +860,30 @@
         tg?.HapticFeedback?.notificationOccurred("success");
 
         const button = document.createElement("button");
-        button.className = "primary";
+        button.type = "button";
+        button.className = "btn btn-primary";
         button.textContent = "🔄 Играть ещё";
         button.addEventListener("click", newGame);
-
         $("history").prepend(button);
       } else {
         $("message").textContent =
           `🐂 ${bulls} быка · 🐄 ${cows} коровы`;
-
         tg?.HapticFeedback?.selectionChanged();
       }
 
       $("guess").value = "";
     });
-  }
 
-  window.createRoom = createRoom;
-  window.newGame = newGame;
-  window.showStats = showStats;
-  window.showRules = showRules;
-  window.showJoinRoom = showJoinRoom;
-  window.goHome = goHome;
-  window.showScreen = showScreen;
+    window.createRoom = createRoom;
+    window.showJoinRoom = showJoinRoom;
+    window.newGame = newGame;
+    window.showStats = showStats;
+    window.showRules = showRules;
+    window.goHome = goHome;
+    window.showScreen = showScreen;
 
-  console.log("Mini App запущен", {
-    telegramAvailable: Boolean(tg),
-    initDataPresent: Boolean(getTelegramInitData())
-  });
-})();
-</script>
+    console.log("Игра загружена.");
+  })();
+  </script>
+</body>
+</html>

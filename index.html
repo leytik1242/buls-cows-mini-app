@@ -449,6 +449,20 @@
       SUPABASE_URL,
       SUPABASE_PUBLISHABLE_KEY
     );
+    const tg = window.Telegram?.WebApp;
+
+if (tg) {
+  tg.ready();
+  tg.expand();
+}
+
+const telegramInitData = tg?.initData ?? "";
+const telegramUser = tg?.initDataUnsafe?.user ?? null;
+
+console.log(
+  "Telegram Mini App:",
+  telegramInitData ? "подключён" : "открыта вне Telegram"
+);
 
     console.log("Supabase подключён к игре");
   </script>

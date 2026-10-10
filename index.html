@@ -243,10 +243,12 @@
           Попробуй угадать их за меньшее число ходов.
         </div>
         <button class="primary" onclick="newGame()">🎮 Играть</button>
-        <button class="secondary" onclick="createRoom()">
+       
+<button class="secondary" onclick="window.createRoom()">
   👥 Создать комнату
   <small>Играть с другом</small>
 </button>
+
 
 <button class="secondary" onclick="showJoinRoom()">
   🔑 Войти в комнату
@@ -394,6 +396,7 @@ async function createRoom() {
     alert(error.message || "Не удалось подключиться к серверу.");
   }
 }
+    window.createRoom = createRoom;
 
 
     function newGame() {

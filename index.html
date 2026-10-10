@@ -13,7 +13,6 @@
 
   const $ = (id) => document.getElementById(id);
 
-  // Сохраняем исходную строку Telegram без преобразований.
   function getTelegramInitData() {
     return window.Telegram?.WebApp?.initData ?? "";
   }
@@ -22,6 +21,7 @@
   let count = 0;
   let finished = false;
   let history = [];
+  let creatingRoom = false;
 
   function readStats() {
     try {
@@ -33,13 +33,17 @@
   }
 
   function saveStats(stats) {
-    localStorage.setItem("bc-stats", JSON.stringify(stats));
+    try {
+      localStorage.setItem("bc-stats", JSON.stringify(stats));
+    } catch (error) {
+      console.warn("Не удалось сохранить статистику.");
+    }
   }
 
   function showScreen(id) {
-    document.querySelectorAll(".screen").forEach((screen) =>
-      screen.classList.remove("active")
-    );
+    document.querySelectorAll(".screen").forEach((screen) => {
+      screen.classList.remove("active");
+    });
 
     const target = $(id);
     if (target) target.classList.add("active");
@@ -50,58 +54,80 @@
   }
 
   async function createRoom() {
+    if (creatingRoom) return;
+
     const initData = getTelegramInitData();
 
     if (!initData) {
-      alert("Открой игру через Telegram, чтобы создать комнату.");
+      alert(
+        "Не удалось получить данные Telegram. " +
+        "Открой игру через бота и попробуй ещё раз."
+      );
       return;
     }
+
+    creatingRoom = true;
 
     const button = document.querySelector(
       'button[onclick="window.createRoom()"]'
     );
 
-    if (button) button.disabled = true;
+    if (button) {
+      button.disabled = true;
+      button.dataset.originalText ||= button.textContent;
+      button.textContent = "Создаём комнату…";
+    }
 
     try {
-      console.log("Создание комнаты: initData получен", {
-        present: true,
-        length: initData.length,
-      });
-
       const response = await fetch(
         `${SUPABASE_URL}/functions/v1/create-room`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "apikey": SUPABASE_PUBLISHABLE_KEY,
+            "apikey": SUPABASE_PUBLISHABLE_KEY
           },
-          body: JSON.stringify({ initData }),
+          body: JSON.stringify({ initData })
         }
       );
 
-      const result = await response.json();
+      let result;
 
-      if (!response.ok) {
-        console.error("Ошибка create-room:", {
-          status: response.status,
-          error: result.error,
-        });
-
+      try {
+        result = await response.json();
+      } catch {
         throw new Error(
-          result.error || `Ошибка сервера: ${response.status}`
+          `Сервер вернул некорректный ответ (${response.status}).`
         );
       }
 
-      alert(
-        "Комната создана!\nКод для друга: " + result.roomCode
-      );
+      if (!response.ok) {
+        console.error("create-room error:", {
+          status: response.status,
+          error: result?.error || "Unknown error"
+        });
 
-      console.log("Комната успешно создана", {
-        roomCode: result.roomCode,
-        status: result.status,
-      });
+        if (response.status === 401) {
+          throw new Error(
+            "Telegram не подтвердил подпись запроса. " +
+            "Нужно исправить проверку на сервере."
+          );
+        }
+
+        throw new Error(
+          result?.error || `Ошибка сервера: ${response.status}`
+        );
+      }
+
+      if (!result?.roomCode) {
+        throw new Error(
+          "Сервер ответил, но не вернул код комнаты."
+        );
+      }
+
+      alert("Комната создана!\nКод для друга: " + result.roomCode);
+
+      console.log("Комната создана успешно.");
     } catch (error) {
       console.error(
         "Ошибка создания комнаты:",
@@ -114,7 +140,13 @@
           : "Не удалось подключиться к серверу."
       );
     } finally {
-      if (button) button.disabled = false;
+      creatingRoom = false;
+
+      if (button) {
+        button.disabled = false;
+        button.textContent =
+          button.dataset.originalText || "Создать комнату";
+      }
     }
   }
 
@@ -127,7 +159,10 @@
 
     while (secret.length < 4) {
       const digit = String(Math.floor(Math.random() * 9) + 1);
-      if (!secret.includes(digit)) secret += digit;
+
+      if (!secret.includes(digit)) {
+        secret += digit;
+      }
     }
 
     count = 0;
@@ -138,11 +173,14 @@
     $("message").textContent = "Жду твою первую попытку!";
     $("history").innerHTML =
       '<div class="section-sub">Тут появятся твои ходы</div>';
+
     $("guess").value = "";
     $("guess").disabled = false;
+
     $("digits").innerHTML = [1, 2, 3, 4]
       .map(() => '<div class="digit">?</div>')
       .join("");
+
     $("best").textContent = readStats().record ?? "—";
 
     showScreen("game");
@@ -154,9 +192,11 @@
 
     $("total").textContent = stats.total;
     $("wins").textContent = stats.wins;
+
     $("rate").textContent = stats.total
-      ? Math.round(stats.wins / stats.total * 100) + "%"
+      ? Math.round((stats.wins / stats.total) * 100) + "%"
       : "0%";
+
     $("record").textContent = stats.record ?? "—";
 
     showScreen("statsScreen");
@@ -166,79 +206,89 @@
     showScreen("rules");
   }
 
-  $("guessForm").addEventListener("submit", (event) => {
-    event.preventDefault();
-    if (finished) return;
+  const guessForm = $("guessForm");
 
-    const guess = $("guess").value.trim();
+  if (guessForm) {
+    guessForm.addEventListener("submit", (event) => {
+      event.preventDefault();
 
-    if (!/^[1-9]{4}$/.test(guess) || new Set(guess).size !== 4) {
-      $("message").textContent =
-        "Введи 4 разные цифры от 1 до 9, например 1572.";
-      return;
-    }
+      if (finished) return;
 
-    count++;
+      const guess = $("guess").value.trim();
 
-    let bulls = 0;
-    let cows = 0;
-
-    for (let i = 0; i < 4; i++) {
-      if (guess[i] === secret[i]) {
-        bulls++;
-      } else if (secret.includes(guess[i])) {
-        cows++;
-      }
-    }
-
-    history.unshift({ guess, bulls, cows });
-
-    $("attempts").textContent = count;
-    $("digits").innerHTML = guess.split("")
-      .map((digit) => `<div class="digit">${digit}</div>`)
-      .join("");
-
-    $("history").innerHTML = history.map((move, i) =>
-      `<div class="move">
-        <span>${history.length - i}. <b>${move.guess}</b></span>
-        <span>🐂 ${move.bulls} &nbsp; 🐄 ${move.cows}</span>
-      </div>`
-    ).join("");
-
-    if (bulls === 4) {
-      finished = true;
-      $("message").textContent =
-        `🏆 Победа! Ты угадал за ${count} попыток!`;
-      $("guess").disabled = true;
-
-      const stats = readStats();
-      stats.total++;
-      stats.wins++;
-
-      if (stats.record === null || count < stats.record) {
-        stats.record = count;
+      if (!/^[1-9]{4}$/.test(guess) ||
+          new Set(guess).size !== 4) {
+        $("message").textContent =
+          "Введи 4 разные цифры от 1 до 9, например 1572.";
+        return;
       }
 
-      saveStats(stats);
-      $("best").textContent = stats.record;
+      count++;
 
-      tg?.HapticFeedback?.notificationOccurred("success");
+      let bulls = 0;
+      let cows = 0;
 
-      const button = document.createElement("button");
-      button.className = "primary";
-      button.textContent = "🔄 Играть ещё";
-      button.onclick = newGame;
-      $("history").prepend(button);
-    } else {
-      $("message").textContent =
-        `🐂 ${bulls} быка · 🐄 ${cows} коровы`;
-      tg?.HapticFeedback?.selectionChanged();
-    }
+      for (let i = 0; i < 4; i++) {
+        if (guess[i] === secret[i]) {
+          bulls++;
+        } else if (secret.includes(guess[i])) {
+          cows++;
+        }
+      }
 
-    $("guess").value = "";
-  });
+      history.unshift({ guess, bulls, cows });
 
-  // Функции доступны для существующих onclick в HTML.
+      $("attempts").textContent = count;
+
+      $("digits").innerHTML = guess.split("")
+        .map((digit) => `<div class="digit">${digit}</div>`)
+        .join("");
+
+      $("history").innerHTML = history.map((move, i) =>
+        `<div class="move">
+          <span>${history.length - i}. <b>${move.guess}</b></span>
+          <span>🐂 ${move.bulls} &nbsp; 🐄 ${move.cows}</span>
+        </div>`
+      ).join("");
+
+      if (bulls === 4) {
+        finished = true;
+
+        $("message").textContent =
+          `🏆 Победа! Ты угадал за ${count} попыток!`;
+
+        $("guess").disabled = true;
+
+        const stats = readStats();
+        stats.total++;
+        stats.wins++;
+
+        if (stats.record === null || count < stats.record) {
+          stats.record = count;
+        }
+
+        saveStats(stats);
+        $("best").textContent = stats.record;
+
+        tg?.HapticFeedback?.notificationOccurred("success");
+
+        const button = document.createElement("button");
+        button.className = "primary";
+        button.textContent = "🔄 Играть ещё";
+        button.addEventListener("click", newGame);
+
+        $("history").prepend(button);
+      } else {
+        $("message").textContent =
+          `🐂 ${bulls} быка · 🐄 ${cows} коровы`;
+
+        tg?.HapticFeedback?.selectionChanged();
+      }
+
+      $("guess").value = "";
+    });
+  }
+
   window.createRoom = createRoom;
   window.newGame = newGame;
   window.showStats = showStats;
@@ -249,7 +299,7 @@
 
   console.log("Mini App запущен", {
     telegramAvailable: Boolean(tg),
-    initDataPresent: Boolean(getTelegramInitData()),
+    initDataPresent: Boolean(getTelegramInitData())
   });
 })();
 </script>

@@ -329,6 +329,9 @@
     tg?.ready();
     tg?.expand();
     
+    const SUPABASE_URL = "https://zszvdojmvillbhwyodzb.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_D5kH72S7FWe0DdhPbMcWrA_guF4w4no";
+    
     const telegramInitData = tg?.initData ?? "";
 const telegramUser = tg?.initDataUnsafe?.user ?? null;
 
@@ -363,7 +366,6 @@ const telegramUser = tg?.initDataUnsafe?.user ?? null;
     }
     
 async function createRoom() {
-  alert("Кнопка работает!");
   if (!telegramInitData) {
     alert("Открой игру через Telegram, чтобы создать комнату.");
     return;

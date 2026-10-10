@@ -366,6 +366,8 @@ const telegramUser = tg?.initDataUnsafe?.user ?? null;
     }
     
 async function createRoom() {
+  console.log("Telegram initData есть:", Boolean(telegramInitData));
+console.log("Telegram user:", telegramUser);
   if (!telegramInitData) {
     alert("Открой игру через Telegram, чтобы создать комнату.");
     return;

@@ -361,6 +361,7 @@ const telegramUser = tg?.initDataUnsafe?.user ?? null;
     }
     
 async function createRoom() {
+  alert("Кнопка работает!");
   if (!telegramInitData) {
     alert("Открой игру через Telegram, чтобы создать комнату.");
     return;

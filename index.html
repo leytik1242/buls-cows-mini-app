@@ -220,18 +220,60 @@
       overflow-wrap: anywhere;
     }
 
+    /* Карточка финального результата находится под историей */
+    #onlineResult:empty {
+      display: none;
+    }
+
+    #onlineResult:not(:empty) {
+      margin-top: 16px;
+      margin-bottom: 6px;
+    }
+
     .winner-secret-reveal {
-      border-color: rgba(110,231,160,.28);
-      background: rgba(110,231,160,.08);
+      position: relative;
+      overflow: hidden;
+      margin: 0;
+      padding: 22px 16px;
+      border: 1px solid rgba(110, 231, 160, .32);
+      border-radius: 20px;
+      background:
+        radial-gradient(ellipse at top, rgba(110, 231, 160, .16), transparent 70%),
+        linear-gradient(145deg, #1d352e, #172a29);
+      color: #d9ffe5;
+      text-align: center;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .18);
+    }
+
+    .winner-secret-reveal::before {
+      content: "🏆";
+      display: block;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+
+    .winner-secret-reveal > div:first-child {
       color: #b5f7ce;
+      font-size: 14px;
+      font-weight: 750;
+      line-height: 1.5;
     }
 
     .revealed-number {
       display: block;
-      margin-top: 10px;
-      font-size: 32px;
+      width: fit-content;
+      min-width: 150px;
+      margin: 15px auto 0;
+      padding: 13px 20px;
+      border: 1px solid rgba(110, 231, 160, .27);
+      border-radius: 15px;
+      background: rgba(0, 0, 0, .20);
+      color: #6ee7a0;
+      font-size: 34px;
       font-weight: 900;
-      letter-spacing: 7px;
+      letter-spacing: 10px;
+      text-indent: 10px;
+      box-shadow: inset 0 0 20px rgba(110, 231, 160, .04);
     }
 
     .back {
@@ -316,10 +358,6 @@
       color: var(--muted);
       font-size: 12px;
       text-align: center;
-    }
-
-    .back {
-      cursor: pointer;
     }
 
     .online-code {
@@ -571,12 +609,8 @@
       </div>
 
       <div class="utility-grid">
-        <button class="utility-btn" type="button" onclick="window.showStats()">
-          📊 Моя статистика
-        </button>
-        <button class="utility-btn" type="button" onclick="window.showRules()">
-          📖 Правила игры
-        </button>
+        <button class="utility-btn" type="button" onclick="window.showStats()">📊 Моя статистика</button>
+        <button class="utility-btn" type="button" onclick="window.showRules()">📖 Правила игры</button>
       </div>
 
       <div class="panel">
@@ -587,20 +621,13 @@
         </select>
 
         <div class="button-stack">
-          <button class="btn btn-primary" type="button" onclick="window.newGame()">
-            🎮 Одиночная игра
-          </button>
-          <button class="btn btn-blue" type="button" onclick="window.createRoom()">
-            👥 Создать онлайн-комнату
-          </button>
-          <button class="btn btn-secondary" type="button" onclick="window.showJoinRoom()">
-            🔑 Войти в комнату
-          </button>
+          <button class="btn btn-primary" type="button" onclick="window.newGame()">🎮 Одиночная игра</button>
+          <button class="btn btn-blue" type="button" onclick="window.createRoom()">👥 Создать онлайн-комнату</button>
+          <button class="btn btn-secondary" type="button" onclick="window.showJoinRoom()">🔑 Войти в комнату</button>
         </div>
 
         <div class="notice">
-          Передай другу код комнаты. Для игры вдвоём он должен открыть этот Mini App
-          через Telegram-бота.
+          Передай другу код комнаты. Для игры вдвоём он должен открыть этот Mini App через Telegram-бота.
         </div>
       </div>
 
@@ -639,8 +666,7 @@
         </div>
         <div class="message" id="message">Жду твою первую попытку!</div>
         <form class="guess-form" id="guessForm">
-          <input class="guess-input" id="guess" type="text" inputmode="numeric"
-            autocomplete="off" maxlength="4" placeholder="1234" aria-label="Твоя попытка" required>
+          <input class="guess-input" id="guess" type="text" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="1234" aria-label="Твоя попытка" required>
           <button class="btn btn-primary" type="submit">Проверить</button>
         </form>
         <p class="hint">Четыре разные цифры от 1 до 9</p>
@@ -648,9 +674,7 @@
 
       <div class="panel">
         <div class="section-title">История ходов</div>
-        <div class="history" id="history">
-          <div class="section-sub">Здесь появятся твои попытки</div>
-        </div>
+        <div class="history" id="history"><div class="section-sub">Здесь появятся твои попытки</div></div>
       </div>
       <div class="button-stack">
         <button class="btn btn-secondary" type="button" onclick="window.giveUp()">🏳️ Сдаться</button>
@@ -708,7 +732,6 @@
     let onlineMode = null;
     let pollingTimer = null;
     let onlineBusy = false;
-    let lastOnlineState = null;
 
     function readStats() {
       try {
@@ -742,7 +765,6 @@
       stopPolling();
       onlineRoomCode = null;
       onlineMode = null;
-      lastOnlineState = null;
       showScreen("home");
     }
 
@@ -764,7 +786,6 @@
         "You are not a member of this room": "Ты не участник этой комнаты.",
         "Could not join room; retry": "Не удалось подключиться к комнате. Попробуй ещё раз.",
         "The race has not started": "Гонка ещё не началась. Ожидаем второго игрока.",
-        "Your secret has already been set": "Ты уже сохранил своё число.",
         "Secret must contain four different digits from 1 to 9": "Введи четыре разные цифры от 1 до 9.",
         "Guess must contain four different digits from 1 to 9": "Введи четыре разные цифры от 1 до 9.",
         "Room state is invalid": "Не удалось прочитать состояние комнаты.",
@@ -776,11 +797,18 @@
       return translations[message] || message || "Произошла неизвестная ошибка.";
     }
 
+    function russianServerMessage(message) {
+      const translations = {
+        "Both players are ready. The game has started.": "Оба игрока загадали свои числа. Дуэль начинается!",
+        "Secret saved. Waiting for the other player.": "Твоё число сохранено. Ждём, пока соперник загадает своё число."
+      };
+
+      return translations[message] || message;
+    }
+
     async function roomRequest(action, extra = {}) {
       const initData = tg?.initData || "";
-      if (!initData) {
-        throw new Error("Открой игру через Telegram-бота.");
-      }
+      if (!initData) throw new Error("Открой игру через Telegram-бота.");
 
       const response = await fetch(`${SUPABASE_URL}/functions/v1/create-room`, {
         method: "POST",
@@ -792,6 +820,7 @@
       });
 
       let result;
+
       try {
         result = await response.json();
       } catch (_) {
@@ -807,8 +836,8 @@
 
     async function createRoom() {
       if (onlineBusy) return;
-
       onlineBusy = true;
+
       const button = document.querySelector('button[onclick="window.createRoom()"]');
       const originalText = button?.textContent;
 
@@ -826,7 +855,6 @@
 
         ensureOnlineScreen();
         showScreen("onlineScreen");
-
         await refreshOnlineRoom();
         startPolling();
 
@@ -906,10 +934,7 @@
             </button>
           </div>
 
-          <p id="onlineStatus" class="message" aria-live="polite">
-            Подключаемся…
-          </p>
-          <div id="onlineResult"></div>
+          <p id="onlineStatus" class="message" aria-live="polite">Подключаемся…</p>
         </div>
 
         <div class="panel">
@@ -950,6 +975,9 @@
             </div>
           </div>
         </div>
+
+        <!-- Финальный результат находится ПОСЛЕ истории ходов -->
+        <div id="onlineResult"></div>
       `;
 
       const app = document.querySelector(".app");
@@ -972,7 +1000,6 @@
       screen.addEventListener("submit", async (event) => {
         const form = event.target;
         if (!(form instanceof HTMLFormElement)) return;
-
         if (form.id !== "secretForm" && form.id !== "onlineGuessForm") return;
 
         event.preventDefault();
@@ -1043,17 +1070,6 @@
         });
     }
 
-    function russianServerMessage(message) {
-      const translations = {
-        "Both players are ready. The game has started.": "Оба игрока загадали свои числа. Дуэль начинается!",
-        "Secret saved. Waiting for the other player.": "Твоё число сохранено. Ждём, пока соперник загадает своё число.",
-        "Оба игрока загадали свои числа. Дуэль начинается!": "Оба игрока загадали свои числа. Дуэль начинается!",
-        "Твоё число сохранено. Ждём, пока соперник загадает своё число.": "Твоё число сохранено. Ждём, пока соперник загадает своё число."
-      };
-
-      return translations[message] || message;
-    }
-
     async function refreshOnlineRoom() {
       if (!onlineRoomCode) return;
 
@@ -1073,7 +1089,7 @@
         try {
           await refreshOnlineRoom();
         } catch (error) {
-          console.error("Не удалось обновить состояние комнаты:", error);
+          console.error("Не удалось обновить комнату:", error);
         }
       }, 2500);
     }
@@ -1084,7 +1100,7 @@
       const container = $("onlinePlayers");
       container.replaceChildren();
 
-      players.forEach((player, index) => {
+      players.forEach((player) => {
         const isMe = String(player.telegramUserId) === you;
 
         const card = document.createElement("div");
@@ -1104,19 +1120,17 @@
         const caption = document.createElement("div");
         caption.className = "player-caption";
 
-        if (players.length < 2 && !isMe) {
-          caption.textContent = "Ожидаем подключения";
-        } else if (onlineMode === "duel") {
-          caption.textContent = player.ready ? "Число загадано" : "Число ещё не загадано";
+        if (onlineMode === "duel") {
+          caption.textContent = player.ready
+            ? "Число загадано"
+            : "Число ещё не загадано";
         } else {
           caption.textContent = `${player.attempts || 0} попыток`;
         }
 
         const status = document.createElement("div");
         status.className = "player-status" + (!player.ready ? " waiting" : "");
-        status.textContent = player.ready
-          ? "Готов"
-          : (players.length < 2 && isMe ? "Создатель" : "Ждём");
+        status.textContent = player.ready ? "Готов" : "Ждём";
 
         info.append(name, caption);
         card.append(avatar, info, status);
@@ -1198,11 +1212,8 @@
         ? gameState.history
         : [];
 
-      // Совместимость со старыми состояниями комнаты, в которых
-      // история ещё хранится только внутри игроков.
+      // Поддерживаем и более старые игровые состояния.
       if (allHistory.length === 0 && Array.isArray(gameState.players)) {
-        allHistory = [];
-
         gameState.players.forEach((player) => {
           (Array.isArray(player.guesses) ? player.guesses : []).forEach((move) => {
             allHistory.push({
@@ -1263,9 +1274,7 @@
 
       if (gameState.winner) {
         view = "finished";
-
-        const youWon = String(gameState.winner) === you;
-        statusMessage = youWon
+        statusMessage = String(gameState.winner) === you
           ? "🏆 Ты победил! Отличная игра!"
           : "Игра окончена. В этот раз победил соперник.";
 
@@ -1323,9 +1332,10 @@
               <button class="btn btn-primary" type="submit">Проверить попытку</button>
             </form>`;
         } else if (view === "finished") {
+          // Сообщение о победе остаётся здесь, а раскрытое число ниже истории.
           actionBox.innerHTML = `
-            <div class="notice winner-secret-reveal">
-              <strong>${String(gameState.winner) === you ? "🏆 Победа!" : "Игра завершена"}</strong>
+            <div class="notice">
+              <strong>${String(gameState.winner) === you ? "🏆 Ты победил!" : "Игра завершена"}</strong>
               <p>${String(gameState.winner) === you
                 ? "Ты первым угадал секретное число."
                 : "Соперник первым угадал нужное число."}</p>
@@ -1333,13 +1343,14 @@
             <button class="btn btn-primary" type="button" id="onlineBackToHome">
               На главную
             </button>`;
+
           $("onlineBackToHome").addEventListener("click", goHome);
         } else {
           actionBox.innerHTML = `<div class="section-sub">${statusMessage}</div>`;
         }
       }
 
-      // Число победителя раскрываем только проигравшему, когда сервер сообщил его.
+      // Карточка раскрытого числа находится под историей ходов.
       resultBox.replaceChildren();
 
       if (gameState.revealedSecret) {
@@ -1347,7 +1358,7 @@
         reveal.className = "notice winner-secret-reveal";
 
         const title = document.createElement("div");
-        title.textContent = "🎯 Число, которое загадал победитель";
+        title.textContent = "Число, которое загадал победитель";
 
         const number = document.createElement("span");
         number.className = "revealed-number";
@@ -1362,9 +1373,7 @@
         resultBox.appendChild(info);
       }
 
-      if (gameState.winner) {
-        stopPolling();
-      }
+      if (gameState.winner) stopPolling();
     }
 
     function updateStatsScreen() {
@@ -1390,12 +1399,10 @@
       stopPolling();
       onlineRoomCode = null;
       onlineMode = null;
-      lastOnlineState = null;
 
       recordInterruptedGame();
 
       secret = "";
-
       while (secret.length < 4) {
         const digit = String(Math.floor(Math.random() * 9) + 1);
         if (!secret.includes(digit)) secret += digit;
@@ -1459,14 +1466,12 @@
 
     $("guessForm").addEventListener("submit", (event) => {
       event.preventDefault();
-
       if (finished) return;
 
       const guess = $("guess").value.trim();
 
       if (!validGuess(guess)) {
-        $("message").textContent =
-          "Введи 4 разные цифры от 1 до 9, например 1572.";
+        $("message").textContent = "Введи 4 разные цифры от 1 до 9, например 1572.";
         return;
       }
 

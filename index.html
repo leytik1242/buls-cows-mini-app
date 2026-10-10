@@ -356,6 +356,41 @@
     function goHome() {
       showScreen("home");
     }
+    
+async function createRoom() {
+  if (!telegramInitData) {
+    alert("Открой игру через Telegram, чтобы создать комнату.");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${SUPABASE_URL}/functions/v1/create-room`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_PUBLISHABLE_KEY
+        },
+        body: JSON.stringify({
+          initData: telegramInitData
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || "Не удалось создать комнату");
+    }
+
+    alert("Комната создана! Код для друга: " + result.roomCode);
+  } catch (error) {
+    console.error("Ошибка создания комнаты:", error);
+    alert(error.message || "Не удалось подключиться к серверу.");
+  }
+}
+
 
     function newGame() {
       secret = "";
